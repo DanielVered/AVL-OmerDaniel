@@ -126,9 +126,19 @@ class AVLTree(object):
 		self.min_node = None
 		self.max_node = None
 
+	"""returns the min node of the AVLTree.
+
+	@rtype: AVLNode
+	@returns: the min node of the AVLTree, or None if empty.
+	"""
 	def get_min(self) -> AVLNode:
 		return self.min_node
 
+	"""returns the max node of the AVLTree.
+
+	@rtype: AVLNode
+	@returns: the max node of the AVLTree, or None if empty.
+	"""
 	def get_max(self) -> AVLNode:
 		return self.max_node
 
