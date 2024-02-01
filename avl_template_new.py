@@ -126,6 +126,12 @@ class AVLTree(object):
 		self.min_node = None
 		self.max_node = None
 
+	def get_min(self) -> AVLNode:
+		return self.min_node
+
+	def get_max(self) -> AVLNode:
+		return self.max_node
+
 	def rotate_left(self, parent: AVLNode, son: AVLNode):
 		return None
 
