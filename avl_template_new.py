@@ -2,14 +2,14 @@
 #id1      - 211399969
 #name1    - Daniel Vered
 #id2      - complete info
-#name2    - complete info  
+#name2    - complete info
 
 
 """A class represnting a node in an AVL tree"""
 
 
 class AVLNode(object):
-	"""Constructor, you are allowed to add more fields. 
+	"""Constructor, you are allowed to add more fields.
 
 	@type value: any
 	@param value: data of your node
@@ -148,6 +148,20 @@ class AVLTree(object):
 	"""
 	def get_max(self) -> AVLNode:
 		return self.max_node
+
+	"""set pointer to max node of the AVLTree.
+
+		@returns: None.
+		"""
+	def set_max(self, node: AVLNode):
+		self.max_node = node
+
+	"""set pointer to min node of the AVLTree.
+
+		@returns: None.
+		"""
+	def set_min(self, node: AVLNode):
+		self.min_node = node
 
 	def rotate_left(self, parent: AVLNode, son: AVLNode):
 		return None
