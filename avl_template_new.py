@@ -134,7 +134,6 @@ class AVLNode(object):
 		has_parent = self.parent
 		return has_children or has_parent
 
-
 """
 A class implementing the ADT Dictionary, using an AVL tree.
 """
@@ -147,7 +146,7 @@ class AVLTree(object):
 
 	"""
 	def __init__(self):
-		self.root = None
+		self.root: AVLNode = None
 		self.size = 0
 		self.min_node = None
 		self.max_node = None
@@ -181,6 +180,10 @@ class AVLTree(object):
 		"""
 	def set_min(self, node: AVLNode):
 		self.min_node = node
+
+	def set_root(self, node: AVLNode):
+		self.root = node
+		return None
 
 	def rotate_left(self, parent: AVLNode, son: AVLNode):
 		return None
@@ -266,8 +269,46 @@ class AVLTree(object):
 	@returns: the absolute value of the difference between the height of the AVL trees joined
 	"""
 	def join(self, tree2, key, val):
+		tree1_height = self.get_root().get_height()
+		tree2_height = tree2.get_root().get_height()
+		connector = AVLNode(key, val)
 
-		return None
+		if tree1_height <= tree2_height:  # join using min anchor from tree2
+			anchor = tree2.get_anchor(tree1_height, is_min=True)
+			connector.set_left(self.get_root())
+			connector.set_right(anchor)
+			connector.set_parent(anchor.get_parent())
+			anchor.set_parent(connector)
+			self.set_root(tree2.get_root())
+
+		else:  # join using max anchor from tree1
+			anchor = self.get_anchor(tree2_height, is_min=False)
+			connector.set_right(tree2.get_root())
+			connector.set_left(anchor)
+			connector.set_parent(anchor.get_parent())
+			anchor.set_parent(connector)
+
+		return abs(tree1_height - tree2_height)
+
+	"""Getting a the most left (min) or the most right (max) node (anchor) at a given height.
+
+	@type tree: AVLTree 
+	@param tree: an AVLTree to search for an anchor
+	@type height: int 
+	@param key: the desired height
+	@type is_min: bool 
+	@param val: The value attached to key
+	@pre: height is smaller than the tree root's height
+	@rtype: AVLNode
+	@returns: the most left (min) or the most right (max) node (anchor) where node.height in [height, height - 1]
+	"""
+	def get_anchor(self, height: int, is_min=True) -> AVLNode:
+		assert height > self.get_root().get_height()
+
+		anchor = self.get_min() if is_min else self.get_max()
+		while anchor.get_height() < height - 1:
+			anchor = anchor.get_parent()
+		return anchor
 
 	"""returns the root of the tree representing the dictionary
 
