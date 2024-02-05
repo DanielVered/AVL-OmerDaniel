@@ -296,6 +296,8 @@ class AVLTree(object):
 			connector.set_parent(anchor.get_parent())
 			anchor.set_parent(connector)
 
+		self.rebalance_tree(connector)
+
 		return abs(tree1_height - tree2_height)
 
 	"""Getting a the most left (min) or the most right (max) node (anchor) at a given height.
