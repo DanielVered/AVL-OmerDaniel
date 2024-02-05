@@ -156,8 +156,8 @@ class AVLTree(object):
 	def __init__(self):
 		self.root: AVLNode = None
 		self.size = 0
-		self.min_node = None
-		self.max_node = None
+		self.min_node: AVLNode = None
+		self.max_node: AVLNode = None
 
 	"""returns the min node of the AVLTree.
 
