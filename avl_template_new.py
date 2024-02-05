@@ -14,7 +14,8 @@ class AVLNode(object):
 	@type value: any
 	@param value: data of your node
 	"""
-	def __init__(self, value):
+	def __init__(self, key, value):
+		self.key = key
 		self.value = value
 		self.left = None
 		self.right = None
@@ -43,6 +44,15 @@ class AVLNode(object):
 	"""
 	def get_parent(self):
 		return self.parent
+
+	"""returns the key
+
+		@rtype: int or None
+		@returns: the key of self, None if the node is virtual
+		"""
+
+	def get_key(self):
+		return self.key
 
 	"""returns the value
 
@@ -87,6 +97,15 @@ class AVLNode(object):
 		self.parent = node
 		return None
 
+	"""sets key
+
+	@type key: int or None
+	@param key: key
+	"""
+	def set_key(self, key):
+		self.key = key
+		return None
+
 	"""sets value
 
 	@type value: any
@@ -96,7 +115,7 @@ class AVLNode(object):
 		self.value = value
 		return None
 
-	"""sets the balance factor of the node
+	"""sets the height of the node
 
 	@type h: int
 	@param h: the height
@@ -247,6 +266,7 @@ class AVLTree(object):
 	@returns: the absolute value of the difference between the height of the AVL trees joined
 	"""
 	def join(self, tree2, key, val):
+
 		return None
 
 	"""returns the root of the tree representing the dictionary
