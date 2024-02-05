@@ -124,6 +124,14 @@ class AVLNode(object):
 		self.height = h
 		return None
 
+	"""returns node's balance factor 
+
+	@rtype: int
+	@returns: node's balance factor, should satisfy |BF| <= 2.
+	"""
+	def get_balance_factor(self):
+		return self.right.get_height() - self.left.get_height()
+
 	"""returns whether self is not a virtual node 
 
 	@rtype: bool
