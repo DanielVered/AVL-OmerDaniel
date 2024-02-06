@@ -167,7 +167,7 @@ class AVLNode(object):
     @return: True if self is a left son, False O.W.
     """
     def is_left_son(self):
-        return self.get_parent().get_left()
+        return self.parent.left
 
 
 """
@@ -201,6 +201,14 @@ class AVLTree(object):
     @rtype: AVLNode
     @returns: the min node of the AVLTree, or None if empty.
     """
+
+    """returns the number of nodes in the AVLTree
+    
+    @rtype: int
+    @returns the number of nodes in the AVLTree
+    """
+    def get_size(self):
+        return self.size
 
     def get_min(self) -> AVLNode:
         return self.min_node
