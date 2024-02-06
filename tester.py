@@ -8,9 +8,7 @@ class FuncStats:
         self.name = name
         self.n_trials = 0
         self.n_failures = 0
-        self.n_invalids = 0
         self.failed_inputs = []
-        self.invalid_inpits = []
 
 
 class AVLTester:
@@ -82,19 +80,48 @@ class AVLTester:
     def split_trees(self, trees: [AVLTree]):
         pass
 
-    @staticmethod
-    def is_valid_avl(tree: AVLTree) -> bool:
-        pass
+    def is_bst_valid(self, node, min_val=float('-inf'), max_val=float('inf')) -> bool:
+        if node is None:
+            return True
 
-    def are_valid_avl_after(self, trees: [AVLTree], func_name: str):
-        pass
+        # Check if the current node key is within the valid range for BST
+        if not (min_val < node.key < max_val):
+            return False
+
+        # Recursively check left and right subtrees with updated valid ranges
+        return (self.is_bst_valid(node.left, min_val, node.key) and
+                self.is_bst_valid(node.right, node.key, max_val))
+
+    def is_avl_valid(self, tree: AVLTree) -> bool:
+        root = tree.get_root()
+        if root is None:
+            return True
+
+        # Check AVL properties
+        return (self.is_avl_valid(root.get_left()) and
+                self.is_avl_valid(root.get_right()) and
+                abs(root.get_balance_factor()) <= 1)
+
+    def is_valid_tree(self, tree: AVLTree) -> (bool, bool):
+        is_bst = self.is_bst_valid(tree.get_root())
+        is_avl = self.is_avl_valid(tree)
+        return is_bst and is_avl
+
+    def get_validity_after(self, trees: [AVLTree]):
+        valid_rate = 1
+        fraction = 1 / len(trees)
+        for tree in trees:
+            if not self.is_valid_tree(tree):
+                valid_rate -= fraction
+        return valid_rate
+
 
     def test(self):
         trees = self.build_trees_arr()
-        # self.are_valid_avl_after(trees, func_name='insert')
+        print(f'validity rate after insert: {self.get_validity_after(trees)}')
 
         self.delete_rand_nodes(trees)
-        # self.are_valid_avl_after(trees, func_name='delete')
+        print(f'validity rate after delete: {self.get_validity_after(trees)}')
 
     def print_stats(self):
         for func_name in self.stats.keys():
@@ -102,8 +129,6 @@ class AVLTester:
             func_stats = self.stats[func_name]
             failure_rate = round(func_stats.n_failures / max(func_stats.n_trials, 1), 2)
             print(f'failure rate: {failure_rate}')
-            invalid_rate = round(func_stats.n_invalids / max(func_stats.n_trials, 1), 2)
-            print(f'invalid rate: {invalid_rate}')
 
     def get_bad_inputs(self, func_name: str) -> [dict]:
         pass
