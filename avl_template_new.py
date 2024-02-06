@@ -160,6 +160,15 @@ class AVLNode(object):
     def is_real_node(self):
         return False if self.key else True
 
+    """returns whether self is a left son or a right son
+    
+`   @pre: self has a parent
+    @rtype: bool
+    @return: True if self is a left son, False O.W.
+    """
+    def is_left_son(self):
+        return self.get_parent().get_left()
+
 
 """
 A class implementing the ADT Dictionary, using an AVL tree.
@@ -172,11 +181,20 @@ class AVLTree(object):
 
     """
 
-    def __init__(self):
-        self.root: AVLNode = None
-        self.size = 0
+    def __init__(self, root: AVLNode = None):
+        self.root: AVLNode = root
+        self.size: int = 0
         self.min_node: AVLNode = None
         self.max_node: AVLNode = None
+
+    """returns the root of the tree representing the dictionary
+
+    @rtype: AVLNode
+    @returns: the root, None if the dictionary is empty
+    """
+
+    def get_root(self):
+        return self.root
 
     """returns the min node of the AVLTree.
 
@@ -433,9 +451,25 @@ class AVLTree(object):
     dictionary smaller than node.key, right is an AVLTree representing the keys in the 
     dictionary larger than node.key.
     """
+    @staticmethod
+    def split(node: AVLNode):
+        smaller_tree = AVLTree(root=node.get_left())
+        bigger_tree = AVLTree(root=node.get_right())
 
-    def split(self, node):
-        pass
+        parent = node.get_parent()
+        while parent:
+            if node.is_left_son():
+                right_subtree = AVLTree(parent.get_right())
+                bigger_tree.join(right_subtree, parent.get_left(), parent.get_right())
+            else:
+                left_subtree = AVLTree(parent.get_left())
+                left_subtree.join(smaller_tree, parent.get_key(), parent.get_val())
+                smaller_tree = left_subtree
+
+            node = parent
+            parent = node.get_parent()
+
+        return [smaller_tree, bigger_tree]
 
     """joins self with key and another AVLTree
 
@@ -494,12 +528,3 @@ class AVLTree(object):
         while anchor.get_height() < height - 1:
             anchor = anchor.get_parent()
         return anchor
-
-    """returns the root of the tree representing the dictionary
-
-    @rtype: AVLNode
-    @returns: the root, None if the dictionary is empty
-    """
-
-    def get_root(self):
-        return self.root
