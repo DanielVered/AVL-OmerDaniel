@@ -3,6 +3,7 @@ from avl_template_new import AVLNode, AVLTree
 
 FUNCS_NAMES = ['insert', 'delete', 'search', 'join', 'split']
 
+
 class FuncStats:
     def __init__(self, name: str):
         self.name = name
@@ -29,6 +30,7 @@ class AVLTester:
         self.stats[func_name].n_failures += 1
         self.stats[func_name].failed_inputs.append(inputs)
 
+# -------------------------------- Action Performers -------------------------------- #
     def build_rand_tree(self, n_nodes: int) -> (AVLTree, int):
         tree = AVLTree()
         a, b = self.range
@@ -81,16 +83,38 @@ class AVLTester:
                     self.update_failure(func_name='delete', inputs={'tree': tree, 'node': node})
 
     def split_trees(self, trees: [AVLTree]) -> [AVLTree]:
-        split_trees = []
+        split_trees = {'trees': [], 'nodes': []}
         for tree in trees:
             node = self.get_rand_node(tree)
+            self.stats['split'].n_trials += 1
             try:
-                split_trees.extend(tree.split(node))
+                split_trees['trees'].extend(tree.split(node))
+                split_trees['nodes'].append(node)
             except:
                 self.stats['split'].n_failures += 1
                 self.stats['split'].failed_inputs.append({'tree': tree, 'node': node})
         return split_trees
 
+    def rejoin_trees(self, split_trees: dict) -> [AVLTree]:
+        rejoined_trees = []
+        for i in range(len(split_trees['nodes'])):
+            left_subtree = split_trees['trees'][2*i]
+            node = split_trees['nodes'][i]
+            right_subtree = split_trees['trees'][2*i + 1]
+            self.stats['join'].n_trials += 1
+            try:
+                rejoined_trees.append(left_subtree.join(right_subtree, node.get_key(), node.get_val()))
+            except:
+                self.stats['join'].n_failures += 1
+                input = {
+                    'left_subtree': left_subtree
+                    , 'right_subtree': right_subtree
+                    , 'node': node
+                }
+                self.stats['join'].failed_inputs.append(input)
+        return rejoined_trees
+
+# -------------------------------- Validity Checkers -------------------------------- #
     def is_bst_valid(self, node, min_val=float('-inf'), max_val=float('inf')) -> bool:
         if node is None:
             return True
@@ -172,6 +196,7 @@ class AVLTester:
     def is_max_valid(self, tree: AVLTree):
         return tree.get_max() == self.calc_tree_max(tree)
 
+# -------------------------------- Actual Tester -------------------------------- #
     def test(self):
         trees = self.build_trees_arr()
         self.get_validity_after(trees, func_name='insert')
@@ -180,7 +205,10 @@ class AVLTester:
         self.get_validity_after(trees, func_name='delete')
 
         split_trees = self.split_trees(trees)
-        self.get_validity_after(split_trees, func_name='split')
+        self.get_validity_after(split_trees['trees'], func_name='split')
+
+        rejoined_trees = self.rejoin_trees(split_trees)
+        self.get_validity_after(rejoined_trees, func_name='join')
 
     def print_stats(self):
         for func_name in self.stats.keys():
@@ -193,6 +221,8 @@ class AVLTester:
             print(f'invalid tree max|min nodes rate: {round(func_stats.n_invalid_edge / self.n_trees, 2)}')
 
 
-tester = AVLTester(0, 100, 100)
+tester = AVLTester(min_key=0, max_key=10**4, n_trees=10**3)
 tester.test()
 tester.print_stats()
+
+pass
