@@ -181,11 +181,39 @@ class AVLTree(object):
 
     """
 
-    def __init__(self, root: AVLNode = None):
+    def __init__(self, root: AVLNode = AVLNode(None, None)):
         self.root: AVLNode = root
-        self.size: int = 0
-        self.min_node: AVLNode = None
-        self.max_node: AVLNode = None
+        self.size: int = self.calc_size(self.root)
+        self.min_node: AVLNode = self.calc_min_node()
+        self.max_node: AVLNode = self.calc_max_node()
+
+    def calc_size(self, node: AVLNode) -> int:
+        if not node.is_real_node():
+            return 0
+        return self.calc_size(node.left) + self.calc_size(node.right) + 1
+
+    def calc_max_node(self) -> AVLNode:
+        curr_node = self.get_root()
+        if not curr_node:
+            return AVLNode(None, None)
+        else:
+            right_son = curr_node.get_right()
+            while right_son:
+                curr_node = right_son
+                right_son = right_son.get_right()
+        return curr_node
+
+    def calc_min_node(self) -> AVLNode:
+        curr_node = self.get_root()
+        if not curr_node:
+            return AVLNode(None)
+        else:
+            left_son = curr_node.get_left()
+            while left_son:
+                curr_node = left_son
+                left_son = left_son.get_left()
+        return curr_node
+
 
     """returns the root of the tree representing the dictionary
 
@@ -513,6 +541,7 @@ class AVLTree(object):
             anchor.set_parent(connector)
 
         self.rebalance_tree(connector, is_insert=True)
+        self.size += 1 + tree2.size
 
         return abs(tree1_height - tree2_height)
 
@@ -536,3 +565,5 @@ class AVLTree(object):
         while anchor.get_height() < height - 1:
             anchor = anchor.get_parent()
         return anchor
+
+pass

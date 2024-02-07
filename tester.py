@@ -166,35 +166,11 @@ class AVLTester:
     def is_size_valid(self, tree: AVLTree, size=0) -> bool:
         return tree.get_size() == self.calc_tree_size(tree.get_root())
 
-    @staticmethod
-    def calc_tree_min(tree: AVLTree) -> AVLNode | None:
-        curr_node = tree.get_root()
-        if not curr_node:
-            return None
-        else:
-            left_son = curr_node.get_left()
-            while left_son:
-                curr_node = left_son
-                left_son = left_son.get_left()
-        return curr_node
-
     def is_min_valid(self, tree: AVLTree) -> bool:
-        return tree.get_min() == self.calc_tree_min(tree)
-
-    @staticmethod
-    def calc_tree_max(tree: AVLTree) -> AVLNode | None:
-        curr_node = tree.get_root()
-        if not curr_node:
-            return None
-        else:
-            right_son = curr_node.get_right()
-            while right_son:
-                curr_node = right_son
-                right_son = right_son.get_right()
-        return curr_node
+        return tree.get_min() == tree.calc_min_node()
 
     def is_max_valid(self, tree: AVLTree):
-        return tree.get_max() == self.calc_tree_max(tree)
+        return tree.get_max() == tree.calc_max_node()
 
 # -------------------------------- Actual Tester -------------------------------- #
     def test(self):
@@ -210,19 +186,19 @@ class AVLTester:
         rejoined_trees = self.rejoin_trees(split_trees)
         self.get_validity_after(rejoined_trees, func_name='join')
 
-    def print_stats(self):
+    def print_stats(self, resolution: int):
         for func_name in self.stats.keys():
             print(f'----stats for: {func_name}')
             func_stats = self.stats[func_name]
-            failure_rate = round(func_stats.n_failures / max(func_stats.n_trials, 1), 2)
+            failure_rate = round(func_stats.n_failures / max(func_stats.n_trials, 1), resolution)
             print(f'failure rate: {failure_rate}')
-            print(f'invalid trees (avl & bst properties) rate: {round(func_stats.n_invalid_trees / self.n_trees, 2)}')
-            print(f'invalid tree size rate: {round(func_stats.n_invalid_size / self.n_trees, 2)}')
-            print(f'invalid tree max|min nodes rate: {round(func_stats.n_invalid_edge / self.n_trees, 2)}')
+            print(f'invalid trees (avl & bst properties) rate: {round(func_stats.n_invalid_trees / self.n_trees, resolution)}')
+            print(f'invalid tree size rate: {round(func_stats.n_invalid_size / self.n_trees, resolution)}')
+            print(f'invalid tree max|min nodes rate: {round(func_stats.n_invalid_edge / self.n_trees, resolution)}')
 
 
-tester = AVLTester(min_key=0, max_key=10**4, n_trees=10**3)
+tester = AVLTester(min_key=0, max_key=10**2, n_trees=10**3)
 tester.test()
-tester.print_stats()
+tester.print_stats(resolution=3)
 
 pass
