@@ -192,6 +192,11 @@ class AVLTree(object):
             return 0
         return self.calc_size(node.left) + self.calc_size(node.right) + 1
 
+    """finds the node with the maximal key
+    
+    @rtype: 
+    @return: pointer to maximal node in AVLTree
+    """
     def calc_max_node(self) -> AVLNode:
         curr_node = self.get_root()
         if not curr_node:
@@ -203,6 +208,11 @@ class AVLTree(object):
                 right_son = right_son.get_right()
         return curr_node
 
+    """finds the node with the minimal key
+
+    @rtype: 
+    @return: pointer to minimal node in AVLTree
+    """
     def calc_min_node(self) -> AVLNode:
         curr_node = self.get_root()
         if not curr_node:
@@ -249,22 +259,6 @@ class AVLTree(object):
 
     def get_max(self) -> AVLNode:
         return self.max_node
-
-    """set pointer to max node of the AVLTree.
-
-        @returns: None.
-        """
-
-    def set_max(self, node: AVLNode):
-        self.max_node = node
-
-    """set pointer to min node of the AVLTree.
-
-        @returns: None.
-        """
-
-    def set_min(self, node: AVLNode):
-        self.min_node = node
 
     def set_root(self, node: AVLNode):
         self.root = node
