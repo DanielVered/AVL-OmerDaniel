@@ -116,7 +116,7 @@ class AVLTester:
 
 # -------------------------------- Validity Checkers -------------------------------- #
     def is_bst_valid(self, node, min_val=float('-inf'), max_val=float('inf')) -> bool:
-        if node is None:
+        if not node.is_real_node():
             return True
 
         # Check if the current node key is within the valid range for BST

@@ -158,7 +158,7 @@ class AVLNode(object):
     """
 
     def is_real_node(self):
-        return False if self.key else True
+        return True if self.key else False
 
     """returns whether self is a left son or a right son
     
