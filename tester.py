@@ -9,6 +9,12 @@ class FuncStats:
         self.n_trials = 0
         self.n_failures = 0
         self.failed_inputs = []
+        self.n_invalid_trees = 0
+        self.invalid_trees = []
+        self.n_invalid_size = 0
+        self.invalid_size_trees = []
+        self.n_invalid_edge = 0
+        self.invalid_edge_trees = []
 
 
 class AVLTester:
@@ -74,11 +80,16 @@ class AVLTester:
                 except:
                     self.update_failure(func_name='delete', inputs={'tree': tree, 'node': node})
 
-    def join_trees(self):
-        pass
-
-    def split_trees(self, trees: [AVLTree]):
-        pass
+    def split_trees(self, trees: [AVLTree]) -> [AVLTree]:
+        split_trees = []
+        for tree in trees:
+            node = self.get_rand_node(tree)
+            try:
+                split_trees.extend(tree.split(node))
+            except:
+                self.stats['split'].n_failures += 1
+                self.stats['split'].failed_inputs.append({'tree': tree, 'node': node})
+        return split_trees
 
     def is_bst_valid(self, node, min_val=float('-inf'), max_val=float('inf')) -> bool:
         if node is None:
@@ -102,26 +113,74 @@ class AVLTester:
                 self.is_avl_valid(root.get_right()) and
                 abs(root.get_balance_factor()) <= 1)
 
-    def is_valid_tree(self, tree: AVLTree) -> (bool, bool):
+    def is_valid_tree(self, tree: AVLTree) -> bool:
         is_bst = self.is_bst_valid(tree.get_root())
         is_avl = self.is_avl_valid(tree)
         return is_bst and is_avl
 
-    def get_validity_after(self, trees: [AVLTree]):
-        valid_rate = 1
-        fraction = 1 / len(trees)
+    def get_validity_after(self, trees: [AVLTree], func_name: str):
+        func_stats = self.stats[func_name]
         for tree in trees:
             if not self.is_valid_tree(tree):
-                valid_rate -= fraction
-        return valid_rate
+                func_stats.n_invalid_trees += 1
+                func_stats.invalid_trees.append(tree)
+            if not self.is_size_valid(tree):
+                func_stats.n_invalid_size += 1
+                func_stats.invalid_size_trees.append(tree)
+            if not self.is_min_valid(tree) or not self.is_max_valid(tree):
+                func_stats.n_invalid_edge += 1
+                func_stats.invalid_edge_trees.append(tree)
 
+    def calc_tree_size(self, node: AVLNode) -> int:
+        if not node:
+            return 0
+
+        left_size = self.calc_tree_size(node.get_left())
+        right_size = self.calc_tree_size(node.get_right())
+        return left_size + right_size + 1
+
+    def is_size_valid(self, tree: AVLTree, size=0) -> bool:
+        return tree.get_size() == self.calc_tree_size(tree.get_root())
+
+    @staticmethod
+    def calc_tree_min(tree: AVLTree) -> AVLNode | None:
+        curr_node = tree.get_root()
+        if not curr_node:
+            return None
+        else:
+            left_son = curr_node.get_left()
+            while left_son:
+                curr_node = left_son
+                left_son = left_son.get_left()
+        return curr_node
+
+    def is_min_valid(self, tree: AVLTree) -> bool:
+        return tree.get_min() == self.calc_tree_min(tree)
+
+    @staticmethod
+    def calc_tree_max(tree: AVLTree) -> AVLNode | None:
+        curr_node = tree.get_root()
+        if not curr_node:
+            return None
+        else:
+            right_son = curr_node.get_right()
+            while right_son:
+                curr_node = right_son
+                right_son = right_son.get_right()
+        return curr_node
+
+    def is_max_valid(self, tree: AVLTree):
+        return tree.get_max() == self.calc_tree_max(tree)
 
     def test(self):
         trees = self.build_trees_arr()
-        print(f'validity rate after insert: {self.get_validity_after(trees)}')
+        self.get_validity_after(trees, func_name='insert')
 
         self.delete_rand_nodes(trees)
-        print(f'validity rate after delete: {self.get_validity_after(trees)}')
+        self.get_validity_after(trees, func_name='delete')
+
+        split_trees = self.split_trees(trees)
+        self.get_validity_after(split_trees, func_name='split')
 
     def print_stats(self):
         for func_name in self.stats.keys():
@@ -129,13 +188,11 @@ class AVLTester:
             func_stats = self.stats[func_name]
             failure_rate = round(func_stats.n_failures / max(func_stats.n_trials, 1), 2)
             print(f'failure rate: {failure_rate}')
-
-    def get_bad_inputs(self, func_name: str) -> [dict]:
-        pass
+            print(f'invalid trees (avl & bst properties) rate: {round(func_stats.n_invalid_trees / self.n_trees, 2)}')
+            print(f'invalid tree size rate: {round(func_stats.n_invalid_size / self.n_trees, 2)}')
+            print(f'invalid tree max|min nodes rate: {round(func_stats.n_invalid_edge / self.n_trees, 2)}')
 
 
 tester = AVLTester(0, 100, 100)
 tester.test()
 tester.print_stats()
-
-pass
