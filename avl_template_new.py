@@ -22,7 +22,10 @@ class AVLNode(object):
         self.left = None
         self.right = None
         self.parent = None
-        self.height = -1
+        if key is None:
+            self.height = -1
+        else:
+            self.height = 0
 
     """returns the left child
     @rtype: AVLNode
@@ -115,6 +118,7 @@ class AVLNode(object):
 
     def set_key(self, key):
         self.key = key
+        self.auto_reset_height()
         return None
 
     """sets value
@@ -149,7 +153,9 @@ class AVLNode(object):
     """
 
     def get_balance_factor(self):
-        return self.right.height - self.left.height
+        if self.is_real_node():
+            return self.right.height - self.left.height
+        return 0
 
     """returns whether self is not a virtual node 
 
@@ -183,7 +189,10 @@ class AVLTree(object):
 
     def __init__(self, root: AVLNode = AVLNode(None, None)):
         self.root: AVLNode = root
-        self.size: int = self.calc_size(self.root)
+        if self.root.is_real_node():
+            self.size: int = self.calc_size(self.root)
+        else:
+            self.size = 0
         self.min_node: AVLNode = self.calc_min_node()
         self.max_node: AVLNode = self.calc_max_node()
 
@@ -272,15 +281,21 @@ class AVLTree(object):
         @returns: None
         """
 
-    @staticmethod
-    def rotate_left(parent: AVLNode):
-        son = parent.left
+    def rotate_left(self, parent: AVLNode, normal_trigger: bool = True):
+        if normal_trigger and parent.left.is_real_node() and parent.left.right.height - parent.left.left.height > 0:
+            son = parent.left.right
+            self.rotate_right(parent.left, False)
+        else:
+            son = parent.left
         parent.left = son.right
         parent.left.parent = parent
         son.right = parent
         son.parent = parent.parent
         parent.parent = son
-        if son.parent.left == parent:
+        if parent is self.root:
+            self.root = son
+            son.parent = None
+        elif son.parent.left == parent:
             son.parent.left = son
         else:
             son.parent.right = son
@@ -295,15 +310,21 @@ class AVLTree(object):
         @returns: None
         """
 
-    @staticmethod
-    def rotate_right(parent: AVLNode):
-        son = parent.right
+    def rotate_right(self, parent: AVLNode, normal_trigger: bool = True):
+        if normal_trigger and parent.right.is_real_node() and parent.right.right.height - parent.right.left.height < 0:
+            son = parent.right.left
+            self.rotate_left(parent.right, False)
+        else:
+            son = parent.right
         parent.right = son.left
         parent.right.parent = parent
         son.left = parent
         son.parent = parent.parent
         parent.parent = son
-        if son.parent.left == parent:
+        if parent is self.root:
+            self.root = son
+            son.parent = None
+        elif son.parent.left == parent:
             son.parent.left = son
         else:
             son.parent.right = son
@@ -339,9 +360,12 @@ class AVLTree(object):
     """
 
     def rebalance_tree(self, start_node: AVLNode, is_insert: bool):
+        if start_node is None:
+            return 0
         rotations = 0
         current_node = start_node
-        while current_node.is_real_node() and not (rotations == 1 and is_insert):
+        while not(current_node is None) and not(rotations == 1 and is_insert):
+            current_node.auto_reset_height()
             if current_node.right.height - current_node.left.height > 1:
                 self.rotate_right(current_node)
                 rotations += 1
@@ -366,21 +390,28 @@ class AVLTree(object):
     """
 
     def insert(self, key, val):
-        if self.size == 0:
-            self.root = AVLNode(key, value)
-            self.root.left = AVLNode(None, None)
-            self.root.right(None, None)
-            self.size = 1
-            return None
-        self.size += 1
         new_node = AVLNode(key, val)
+        new_node.right = AVLNode(None, None)
+        new_node.right.parent = new_node
+        new_node.left = AVLNode(None, None)
+        new_node.left.parent = new_node
+        new_node.auto_reset_height()
+        if self.root.key is None:
+            self.root = new_node
+            self.min_node = new_node
+            self.max_node = new_node
+            self.size = 1
+            return 0
+        self.size += 1
         if key > self.max_node.key:
+            self.max_node.right.parent = None
             new_node.parent = self.max_node
-            self.max_node.parent.right = new_node
+            self.max_node.right = new_node
             self.max_node = new_node
         elif key < self.min_node.key:
+            self.min_node.left.parent = None
             new_node.parent = self.min_node
-            self.min_node.parent.left = new_node
+            self.min_node.left = new_node
             self.min_node = new_node
         else:
             current_node = self.root
@@ -389,14 +420,36 @@ class AVLTree(object):
                     current_node = current_node.left
                 else:
                     current_node = current_node.right
-
             if current_node.parent.left == current_node:
                 current_node.parent.left = new_node
             else:
                 current_node.parent.right = new_node
             new_node.parent = current_node.parent
             current_node.parent = None
-        return self.rebalance_tree(new_node.parent, True)
+
+        return AVLTree.rebalance_tree(self, new_node.parent, True)
+
+    def easy_delete(self, node: AVLNode):
+        if node.right.is_real_node():
+            new_node = node.right
+        elif node.left.is_real_node():
+            new_node = node.left
+        else:
+            new_node = AVLNode(None, None)
+        start_node = node.parent
+        new_node.parent = node.parent
+        if node is self.root:
+            self.root = new_node
+        elif node.parent.left == node:
+            node.parent.left = new_node
+        else:
+            node.parent.right = new_node
+        node.left = None
+        node.right = None
+        node.key = None
+        node.value = None
+        node.parent = None
+        return start_node
 
     """deletes node from the dictionary
 
@@ -407,46 +460,21 @@ class AVLTree(object):
     """
 
     def delete(self, node):
-        if self.size == 1:
-            self.size = 0
-            self.root = AVLNode(None, None)
-            return None
         self.size -= 1
-        if not (node.right.is_real_node() or node.left.is_real_node()):
-            start_node = node.parent
-            if node.parent.left == node:
-                node.parent.left = AVLNode(None, None)
-                node.parent.left.parent = node.parent
-            else:
-                node.parent.right = AVLNode(None, None)
-                node.parent.right.parent = node.parent
+        if self.size == 0:
+            self.root = AVLNode(None, None)
+            return 0
+        if not (node.right.is_real_node() and node.left.is_real_node()):
+            start_node = self.easy_delete(node)
         else:
             current_node = node.right
-            while not (current_node.left.is_real_node()):
-                current_node = current_node.right
-            while not (current_node.left.is_real_node()):
+            while current_node.left.is_real_node():
                 current_node = current_node.left
+            node.key = current_node.key
+            node.value = current_node.value
 
-            if current_node.right.is_real_node():
-                current_node.parent.left = current_node.right
-            else:
-                current_node.parent.left = AVLNode(None, None)
+            start_node = self.easy_delete(current_node)
 
-            start_node = current_node.parent
-            current_node.parent.left.parent = current_node.parent
-            current_node.left = node.left
-            current_node.right = node.right
-            node.left.parent = current_node
-            node.right.parent = current_node
-            current_node.parent = node.parent
-            if current_node.parent.left == node:
-                current_node.parent.left = current_node
-            else:
-                current_node.parent.right = current_node
-
-        node.parent = None
-        node.left = None
-        node.right = None
         return self.rebalance_tree(start_node, False)
 
     """returns an array representing dictionary by making and in-order tree journey
@@ -569,5 +597,18 @@ class AVLTree(object):
         while anchor.get_height() < height - 1:
             anchor = anchor.get_parent()
         return anchor
+
+
+    def node_search(self, key):
+        current_node = self.root
+        while key != current_node.key and current_node.is_real_node():
+            if current_node.key > key:
+                current_node = current_node.left
+            else:
+                current_node = current_node.right
+
+        if current_node.is_real_node():
+            return current_node
+        return None
 
 pass
