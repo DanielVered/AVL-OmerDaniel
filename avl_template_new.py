@@ -183,7 +183,7 @@ class AVLTree(object):
 
     def __init__(self, root: AVLNode = AVLNode(None, None)):
         self.root: AVLNode = root
-        self.size: int = self.calc_size(self.root)
+        self.size: int = 0
         self.min_node: AVLNode = self.calc_min_node()
         self.max_node: AVLNode = self.calc_max_node()
 
@@ -194,7 +194,7 @@ class AVLTree(object):
 
     """finds the node with the maximal key
     
-    @rtype: 
+    @rtype: AVLNode
     @return: pointer to maximal node in AVLTree
     """
     def calc_max_node(self) -> AVLNode:
@@ -210,20 +210,19 @@ class AVLTree(object):
 
     """finds the node with the minimal key
 
-    @rtype: 
+    @rtype: AVLNode
     @return: pointer to minimal node in AVLTree
     """
     def calc_min_node(self) -> AVLNode:
         curr_node = self.get_root()
         if not curr_node:
-            return AVLNode(None)
+            return AVLNode(None, None)
         else:
             left_son = curr_node.get_left()
             while left_son:
                 curr_node = left_son
                 left_son = left_son.get_left()
         return curr_node
-
 
     """returns the root of the tree representing the dictionary
 
