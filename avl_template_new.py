@@ -149,9 +149,10 @@ class AVLNode(object):
     """
 
     def get_balance_factor(self):
-        right_height = self.right.height if self.right.is_real_node() else 0
-        left_height = self.left.height if self.left.is_real_node() else 0
-        return right_height - left_height
+        if self.is_real_node():
+            return self.right.height - self.left.height
+        else:
+            return 0
 
     """returns whether self is not a virtual node 
 
