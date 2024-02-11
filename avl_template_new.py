@@ -366,6 +366,12 @@ class AVLTree(object):
     """
 
     def insert(self, key, val):
+        if self.size == 0:
+            self.root = AVLNode(key, value)
+            self.root.left = AVLNode(None, None)
+            self.root.right(None, None)
+            self.size = 1
+            return None
         self.size += 1
         new_node = AVLNode(key, val)
         if key > self.max_node.key:
@@ -401,6 +407,10 @@ class AVLTree(object):
     """
 
     def delete(self, node):
+        if self.size == 1:
+            self.size = 0
+            self.root = AVLNode(None, None)
+            return None
         self.size -= 1
         if not (node.right.is_real_node() or node.left.is_real_node()):
             start_node = node.parent
