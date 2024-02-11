@@ -10,12 +10,12 @@ class FuncStats:
         self.n_trials = 0
         self.n_failures = 0
         self.failed_inputs = []
-        self.n_invalid_trees = 0
-        self.invalid_trees = []
+        self.n_invalid_trees = 0  # not an AVL/BST
+        self.invalid_trees = []  # not an AVL/BST
         self.n_invalid_size = 0
         self.invalid_size_trees = []
-        self.n_invalid_edge = 0
-        self.invalid_edge_trees = []
+        self.n_invalid_edge = 0  # min/max are invalid
+        self.invalid_edge_trees = []  # min/max are invalid
 
 
 class AVLTester:
