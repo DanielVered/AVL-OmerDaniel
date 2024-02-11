@@ -149,7 +149,9 @@ class AVLNode(object):
     """
 
     def get_balance_factor(self):
-        return self.right.height - self.left.height
+        right_height = self.right.height if self.right else 0
+        left_height = self.left.height if self.left else 0
+        return right_height - left_height
 
     """returns whether self is not a virtual node 
 
@@ -181,16 +183,11 @@ class AVLTree(object):
 
     """
 
-    def __init__(self, root: AVLNode = AVLNode(None, None)):
-        self.root: AVLNode = root
+    def __init__(self):
+        self.root: AVLNode = AVLNode(None, None)
         self.size: int = 0
-        self.min_node: AVLNode = self.calc_min_node()
-        self.max_node: AVLNode = self.calc_max_node()
-
-    def calc_size(self, node: AVLNode) -> int:
-        if not node.is_real_node():
-            return 0
-        return self.calc_size(node.left) + self.calc_size(node.right) + 1
+        self.min_node: AVLNode = self.root
+        self.max_node: AVLNode = self.root
 
     """finds the node with the maximal key
     
@@ -238,14 +235,6 @@ class AVLTree(object):
     @rtype: AVLNode
     @returns: the min node of the AVLTree, or None if empty.
     """
-
-    """returns the number of nodes in the AVLTree
-    
-    @rtype: int
-    @returns the number of nodes in the AVLTree
-    """
-    def get_size(self):
-        return self.size
 
     def get_min(self) -> AVLNode:
         return self.min_node
@@ -366,7 +355,7 @@ class AVLTree(object):
 
     def insert(self, key, val):
         if self.size == 0:
-            self.root = AVLNode(key, value)
+            self.root = AVLNode(key, val)
             self.root.left = AVLNode(None, None)
             self.root.right(None, None)
             self.size = 1
@@ -492,16 +481,20 @@ class AVLTree(object):
     """
     @staticmethod
     def split(node: AVLNode):
-        smaller_tree = AVLTree(root=node.get_left())
-        bigger_tree = AVLTree(root=node.get_right())
+        smaller_tree = AVLTree()
+        smaller_tree.set_root(node.get_left())
+        bigger_tree = AVLTree()
+        bigger_tree.set_root(node.get_right())
 
         parent = node.get_parent()
         while parent:
             if node.is_left_son():
-                right_subtree = AVLTree(parent.get_right())
+                right_subtree = AVLTree()
+                right_subtree.set_root(parent.get_right())
                 bigger_tree.join(right_subtree, parent.get_left(), parent.get_right())
             else:
-                left_subtree = AVLTree(parent.get_left())
+                left_subtree = AVLTree()
+                left_subtree.set_root(parent.get_left())
                 left_subtree.join(smaller_tree, parent.get_key(), parent.get_val())
                 smaller_tree = left_subtree
 
@@ -568,5 +561,3 @@ class AVLTree(object):
         while anchor.get_height() < height - 1:
             anchor = anchor.get_parent()
         return anchor
-
-pass

@@ -31,7 +31,7 @@ class AVLTester:
         self.stats[func_name].failed_inputs.append(inputs)
 
 # -------------------------------- Action Performers -------------------------------- #
-    def build_rand_tree(self, n_nodes: int) -> (AVLTree, int):
+    def build_rand_tree(self, n_nodes: int) -> AVLTree:
         tree = AVLTree()
         a, b = self.range
 
@@ -116,7 +116,7 @@ class AVLTester:
 
 # -------------------------------- Validity Checkers -------------------------------- #
     def is_bst_valid(self, node, min_val=float('-inf'), max_val=float('inf')) -> bool:
-        if not node.is_real_node():
+        if node == None or not node.is_real_node():
             return True
 
         # Check if the current node key is within the valid range for BST
@@ -127,19 +127,18 @@ class AVLTester:
         return (self.is_bst_valid(node.left, min_val, node.key) and
                 self.is_bst_valid(node.right, node.key, max_val))
 
-    def is_avl_valid(self, tree: AVLTree) -> bool:
-        root = tree.get_root()
-        if root is None:
+    def is_avl_valid(self, node: AVLNode) -> bool:
+        if not node or node.is_real_node():
             return True
 
         # Check AVL properties
-        return (self.is_avl_valid(root.get_left()) and
-                self.is_avl_valid(root.get_right()) and
-                abs(root.get_balance_factor()) <= 1)
+        return (self.is_avl_valid(node.get_left()) and
+                self.is_avl_valid(node.get_right()) and
+                abs(node.get_balance_factor()) <= 1)
 
     def is_valid_tree(self, tree: AVLTree) -> bool:
         is_bst = self.is_bst_valid(tree.get_root())
-        is_avl = self.is_avl_valid(tree)
+        is_avl = self.is_avl_valid(tree.get_root())
         return is_bst and is_avl
 
     def get_validity_after(self, trees: [AVLTree], func_name: str):
