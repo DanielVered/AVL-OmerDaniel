@@ -36,12 +36,15 @@ class AVLTester:
         a, b = self.range
 
         self.stats['insert'].n_trials += n_nodes
-        for _ in range(n_nodes):
-            key = random.randint(a, b)
+        keys = [n + 1 for n in range(n_nodes)]
+        random.shuffle(keys)
+
+        for key in keys:
             try:
-                tree.insert(key=key, val=None)
-            except:
-                self.update_failure(func_name='insert', inputs={'tree': tree, 'key': key})
+                tree.insert(key=key, val=key)
+            except BaseException as err:
+                msg = str(err)
+                self.update_failure(func_name='insert', inputs={'tree': tree, 'key': key, 'exception': msg})
         return tree
 
     def build_trees_arr(self) -> ([AVLTree], int):
@@ -49,9 +52,8 @@ class AVLTester:
         a, b = self.range
 
         for _ in range(self.n_trees):
-            size = random.randint(max(a, 1), b)
-            tree = self.build_rand_tree(n_nodes=size)
-            trees.append(tree)
+            size = random.randint(max(a, 0), b)
+            trees.append(self.build_rand_tree(n_nodes=size))
 
         return trees
 
@@ -59,7 +61,7 @@ class AVLTester:
         size = tree.size
         if size == 0:
             return None
-        key = random.randint(0, size - 1)
+        key = random.choice(tree.avl_to_array())[0]
         self.stats['search'].n_trials += 1
         try:
             node = tree.node_search(key)
@@ -79,8 +81,9 @@ class AVLTester:
                 node = self.get_rand_node(tree)
                 try:
                     tree.delete(node)
-                except:
-                    self.update_failure(func_name='delete', inputs={'tree': tree, 'node': node})
+                except BaseException as err:
+                    msg = str(err)
+                    self.update_failure(func_name='delete', inputs={'tree': tree, 'node': node, 'exception': msg})
 
     def split_trees(self, trees: [AVLTree]) -> [AVLTree]:
         split_trees = {'trees': [], 'nodes': []}
@@ -106,17 +109,17 @@ class AVLTester:
                 rejoined_trees.append(left_subtree.join(right_subtree, node.get_key(), node.get_val()))
             except:
                 self.stats['join'].n_failures += 1
-                input_ = {
+                input = {
                     'left_subtree': left_subtree
                     , 'right_subtree': right_subtree
                     , 'node': node
                 }
-                self.stats['join'].failed_inputs.append(input_)
+                self.stats['join'].failed_inputs.append(input)
         return rejoined_trees
 
 # -------------------------------- Validity Checkers -------------------------------- #
     def is_bst_valid(self, node, min_val=float('-inf'), max_val=float('inf')) -> bool:
-        if not node or not node.is_real_node():
+        if not node.is_real_node():
             return True
 
         # Check if the current node key is within the valid range for BST
@@ -127,14 +130,14 @@ class AVLTester:
         return (self.is_bst_valid(node.left, min_val, node.key) and
                 self.is_bst_valid(node.right, node.key, max_val))
 
-    def is_avl_valid(self, node: AVLNode) -> bool:
-        if not node or node.is_real_node():
+    def is_avl_valid(self, root: AVLNode) -> bool:
+        if not(root.is_real_node()):
             return True
 
         # Check AVL properties
-        return (self.is_avl_valid(node.get_left()) and
-                self.is_avl_valid(node.get_right()) and
-                abs(node.get_balance_factor()) <= 1)
+        return (self.is_avl_valid(root.get_left()) and
+                self.is_avl_valid(root.get_right()) and
+                abs(root.get_balance_factor()) <= 1)
 
     def is_valid_tree(self, tree: AVLTree) -> bool:
         is_bst = self.is_bst_valid(tree.get_root())
@@ -155,7 +158,7 @@ class AVLTester:
                 func_stats.invalid_edge_trees.append(tree)
 
     def calc_tree_size(self, node: AVLNode) -> int:
-        if not node:
+        if not node.is_real_node():
             return 0
 
         left_size = self.calc_tree_size(node.get_left())
@@ -165,13 +168,15 @@ class AVLTester:
     def is_size_valid(self, tree: AVLTree, size=0) -> bool:
         return tree.size == self.calc_tree_size(tree.get_root())
 
-    @staticmethod
-    def is_min_valid(tree: AVLTree) -> bool:
-        return tree.get_min() == tree.calc_min_node()
+    def is_min_valid(self, tree: AVLTree) -> bool:
+        if tree.size > 0:
+            return tree.get_min() == tree.calc_min_node()
+        return True
 
-    @staticmethod
-    def is_max_valid(tree: AVLTree):
-        return tree.get_max() == tree.calc_max_node()
+    def is_max_valid(self, tree: AVLTree):
+        if tree.size > 0:
+            return tree.get_max() == tree.calc_max_node()
+        return True
 
 # -------------------------------- Actual Tester -------------------------------- #
     def test(self):
