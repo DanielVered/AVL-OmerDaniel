@@ -22,7 +22,10 @@ class AVLNode(object):
         self.left = None
         self.right = None
         self.parent = None
-        self.height = -1
+        if key is None:
+            self.height = -1
+        else:
+            self.height = 0
 
     """returns the left child
     @rtype: AVLNode
@@ -151,8 +154,7 @@ class AVLNode(object):
     def get_balance_factor(self):
         if self.is_real_node():
             return self.right.height - self.left.height
-        else:
-            return 0
+        return 0
 
     """returns whether self is not a virtual node 
 
