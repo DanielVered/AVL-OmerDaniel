@@ -516,7 +516,7 @@ class AVLTree(object):
         @returns: the successor of node or None if node has no successor
         """
     def successor(self, node):
-        if not node is self.max_node:
+        if node is self.max_node:
            curr = None
         elif node.right.is_real_node():
             curr = node.right
@@ -542,7 +542,7 @@ class AVLTree(object):
             lst.append((curr.key, curr.value))
             curr = self.successor(curr)
         return lst
-        #return self.avl_to_array_help(self.root)
+
     """returns the number of items in dictionary 
 
     @rtype: int
