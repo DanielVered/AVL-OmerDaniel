@@ -204,8 +204,8 @@ class AVLTree(object):
         if not curr_node.is_real_node():
             return AVLNode(None, None)
         else:
-            right_son = curr_node.get_right()
-            while right_son:
+            right_son = curr_node
+            while right_son.is_real_node():
                 curr_node = right_son
                 right_son = right_son.get_right()
         return curr_node
@@ -220,8 +220,8 @@ class AVLTree(object):
         if not curr_node.is_real_node():
             return AVLNode(None, None)
         else:
-            left_son = curr_node.get_left()
-            while left_son:
+            left_son = curr_node
+            while left_son.is_real_node():
                 curr_node = left_son
                 left_son = left_son.get_left()
         return curr_node
