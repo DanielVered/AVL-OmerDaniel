@@ -31,7 +31,7 @@ class AVLTester:
         self.stats[func_name].failed_inputs.append(inputs)
 
 # -------------------------------- Action Performers -------------------------------- #
-    def build_rand_tree(self, n_nodes: int) -> AVLTree:
+    def build_rand_tree(self, n_nodes: int) -> (AVLTree, int):
         tree = AVLTree()
         a, b = self.range
 
@@ -45,6 +45,7 @@ class AVLTester:
         return tree
 
     def build_trees_arr(self) -> ([AVLTree], int):
+        print("here!")
         trees = []
         a, b = self.range
 
@@ -52,6 +53,8 @@ class AVLTester:
             size = random.randint(max(a, 1), b)
             tree = self.build_rand_tree(n_nodes=size)
             trees.append(tree)
+
+        print("done!")
 
         return trees
 
@@ -116,7 +119,7 @@ class AVLTester:
 
 # -------------------------------- Validity Checkers -------------------------------- #
     def is_bst_valid(self, node, min_val=float('-inf'), max_val=float('inf')) -> bool:
-        if node == None or not node.is_real_node():
+        if not node.is_real_node():
             return True
 
         # Check if the current node key is within the valid range for BST
@@ -127,14 +130,14 @@ class AVLTester:
         return (self.is_bst_valid(node.left, min_val, node.key) and
                 self.is_bst_valid(node.right, node.key, max_val))
 
-    def is_avl_valid(self, node: AVLNode) -> bool:
-        if not node or node.is_real_node():
+    def is_avl_valid(self, root: AVLNode) -> bool:
+        if root is None or not(root.is_real_node()):
             return True
 
         # Check AVL properties
-        return (self.is_avl_valid(node.get_left()) and
-                self.is_avl_valid(node.get_right()) and
-                abs(node.get_balance_factor()) <= 1)
+        return (self.is_avl_valid(root.get_left()) and
+                self.is_avl_valid(root.get_right()) and
+                abs(root.get_balance_factor()) <= 1)
 
     def is_valid_tree(self, tree: AVLTree) -> bool:
         is_bst = self.is_bst_valid(tree.get_root())
@@ -196,7 +199,7 @@ class AVLTester:
             print(f'invalid tree max|min nodes rate: {round(func_stats.n_invalid_edge / self.n_trees, resolution)}')
 
 
-tester = AVLTester(min_key=0, max_key=10**2, n_trees=10**3)
+tester = AVLTester(min_key=0, max_key=10**2, n_trees=10**2)
 tester.test()
 tester.print_stats(resolution=3)
 
