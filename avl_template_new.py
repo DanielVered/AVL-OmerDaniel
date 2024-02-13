@@ -165,7 +165,7 @@ class AVLNode(object):
     """
 
     def is_real_node(self):
-        return True if self.key else False
+        return False if self.key is None else True
 
     """returns whether self is a left son or a right son
     
@@ -516,7 +516,7 @@ class AVLTree(object):
         @returns: the successor of node or None if node has no successor
         """
     def successor(self, node):
-        if node is self.max_node:
+        if not node is self.max_node:
            curr = None
         elif node.right.is_real_node():
             curr = node.right
