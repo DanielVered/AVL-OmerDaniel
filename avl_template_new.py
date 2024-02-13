@@ -201,7 +201,7 @@ class AVLTree(object):
     """
     def calc_max_node(self) -> AVLNode:
         curr_node = self.get_root()
-        if not curr_node:
+        if not curr_node.is_real_node():
             return AVLNode(None, None)
         else:
             right_son = curr_node.get_right()
@@ -217,7 +217,7 @@ class AVLTree(object):
     """
     def calc_min_node(self) -> AVLNode:
         curr_node = self.get_root()
-        if not curr_node:
+        if not curr_node.is_real_node():
             return AVLNode(None, None)
         else:
             left_son = curr_node.get_left()
