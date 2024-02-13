@@ -45,7 +45,6 @@ class AVLTester:
         return tree
 
     def build_trees_arr(self) -> ([AVLTree], int):
-        print("here!")
         trees = []
         a, b = self.range
 
@@ -54,12 +53,10 @@ class AVLTester:
             tree = self.build_rand_tree(n_nodes=size)
             trees.append(tree)
 
-        print("done!")
-
         return trees
 
     def get_rand_node(self, tree: AVLTree):
-        size = tree.get_size()
+        size = tree.size
         if size == 0:
             return None
         key = random.randint(0, size - 1)
@@ -72,7 +69,7 @@ class AVLTester:
 
     def delete_rand_nodes(self, trees: list[AVLTree]):
         for tree in trees:
-            size = tree.get_size()
+            size = tree.size
             if size in [0, 1]:
                 nodes_to_delete = size
             else:
@@ -166,7 +163,7 @@ class AVLTester:
         return left_size + right_size + 1
 
     def is_size_valid(self, tree: AVLTree, size=0) -> bool:
-        return tree.get_size() == self.calc_tree_size(tree.get_root())
+        return tree.size == self.calc_tree_size(tree.get_root())
 
     def is_min_valid(self, tree: AVLTree) -> bool:
         return tree.get_min() == tree.calc_min_node()
