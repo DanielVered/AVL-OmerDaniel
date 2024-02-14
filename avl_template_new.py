@@ -243,15 +243,9 @@ class AVLTree(object):
     def get_max(self) -> AVLNode:
         return self.max_node
 
-    """performs an edge rotation between a parent node and its left son
-
-        @type parent: AVLNode
-        @param parent: the parent node involved in the rotation
-        @type normal_trigger: bool
-        @param normal_trigger: True at default, False if triggered from rotate_left (dual rotation) 
-        @rtype: None
-        @returns: None
-        """
+    def fix_edges(self):
+        self.min_node = self.calc_min_node()
+        self.max_node = self.calc_max_node()
 
     def replace_tree(self, tree):
         self.root = tree.root
@@ -269,6 +263,16 @@ class AVLTree(object):
         tree = AVLTree()
         tree.insert(root.get_key(), root.get_value())
         return tree
+
+    """performs an edge rotation between a parent node and its left son
+
+        @type parent: AVLNode
+        @param parent: the parent node involved in the rotation
+        @type normal_trigger: bool
+        @param normal_trigger: True at default, False if triggered from rotate_left (dual rotation) 
+        @rtype: None
+        @returns: None
+        """
 
     def rotate_left(self, parent: AVLNode, normal_trigger: bool = True):
         r_val = 1
@@ -592,6 +596,9 @@ class AVLTree(object):
 
             node = parent
             parent = node.get_parent()
+
+        smaller_tree.fix_edges()
+        bigger_tree.fix_edges()
 
         return [smaller_tree, bigger_tree]
 
