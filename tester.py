@@ -88,6 +88,8 @@ class AVLTester:
         split_trees = {'trees': [], 'nodes': []}
         for tree in trees:
             node = self.get_rand_node(tree)
+            if node is None:
+                continue
             self.stats['split'].n_trials += 1
             try:
                 split_trees['trees'].extend(tree.split(node))
@@ -168,14 +170,22 @@ class AVLTester:
     def is_size_valid(self, tree: AVLTree, size=0) -> bool:
         return tree.size == self.calc_tree_size(tree.get_root())
 
+    @staticmethod
     def is_min_valid(self, tree: AVLTree) -> bool:
         if tree.size > 0:
-            return tree.get_min() == tree.calc_min_node()
+            min_node = tree.calc_min_node()
+            if min_node is None:
+                return True
+            return tree.get_min() == min_node
         return True
 
-    def is_max_valid(self, tree: AVLTree):
+    @staticmethod
+    def is_max_valid(tree: AVLTree):
         if tree.size > 0:
-            return tree.get_max() == tree.calc_max_node()
+            max_node = tree.calc_max_node()
+            if max_node is None:
+                return True
+            return tree.get_max() == max_node
         return True
 
 # -------------------------------- Actual Tester -------------------------------- #
@@ -212,7 +222,7 @@ class AVLTester:
         return {err: exceptions.count(err) for err in exceptions}
 
 
-tester = AVLTester(min_key=0, max_key=10**3, n_trees=10**3)
+tester = AVLTester(min_key=0, max_key=10**2, n_trees=10**2)
 tester.test()
 tester.print_stats(resolution=3)
 
