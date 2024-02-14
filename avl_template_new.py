@@ -253,13 +253,11 @@ class AVLTree(object):
         @returns: None
         """
 
-    """replaces the root with a given AVLNode
-    @pre: new_root has no parent
-    @pre:  new_root.left.key < new_root.key < new_root.right.key  
-    """
-    def replace_root(self, new_root: AVLNode):
-        self.root = new_root
-        return None
+    def replace_tree(self, tree):
+        self.root = tree.root
+        self.size = tree.size
+        self.min_node = tree.min_node
+        self.max_node = tree.max_node
 
     def rotate_left(self, parent: AVLNode, normal_trigger: bool = True):
         r_val = 1
