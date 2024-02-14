@@ -106,18 +106,8 @@ class AVLNode(object):
     @param node: a node
     """
 
-    def set_parent(self, node):
-        self.parent = node
-        return None
-
-    """sets key
-
-    @type key: int or None
-    @param key: key
-    """
-
-    def set_key(self, key):
-        self.key = key
+    def set_parent(self, parent):
+        self.parent = parent
         return None
 
     """sets value
@@ -128,16 +118,6 @@ class AVLNode(object):
 
     def set_value(self, value):
         self.value = value
-        return None
-
-    """sets the height of the node
-
-    @type h: int
-    @param h: the height
-    """
-
-    def set_height(self, h):
-        self.height = h
         return None
 
     def auto_reset_height(self):
@@ -175,7 +155,7 @@ class AVLNode(object):
     """
     def is_left_son(self):
         if self.parent is not None:
-            return self.parent.left == self
+            return self.parent.left is self
         return False
 
 
@@ -263,12 +243,6 @@ class AVLTree(object):
     def get_max(self) -> AVLNode:
         return self.max_node
 
-    def set_root(self, node: AVLNode):
-        self.root = node
-        # self.size = self.calc_tree_size(self.root)
-        return None
-
-
     """performs an edge rotation between a parent node and its left son
 
         @type parent: AVLNode
@@ -278,6 +252,14 @@ class AVLTree(object):
         @rtype: None
         @returns: None
         """
+
+    """replaces the root with a given AVLNode
+    @pre: new_root has no parent
+    @pre:  new_root.left.key < new_root.key < new_root.right.key  
+    """
+    def replace_root(self, new_root: AVLNode):
+        self.root = new_root
+        return None
 
     def rotate_left(self, parent: AVLNode, normal_trigger: bool = True):
         r_val = 1
