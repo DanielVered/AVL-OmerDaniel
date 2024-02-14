@@ -259,6 +259,11 @@ class AVLTree(object):
         self.min_node = tree.min_node
         self.max_node = tree.max_node
 
+    """An alternative contructor to initiate a tree from a root.
+    @type root: AVLNode
+    @return: an AVLTree whose root is the one given
+    @attention: the returned tree will have an inconsistency size.
+    """
     @staticmethod
     def tree_from_root(root: AVLNode):
         tree = AVLTree()
@@ -572,20 +577,16 @@ class AVLTree(object):
     """
     @staticmethod
     def split(node: AVLNode):
-        smaller_tree = AVLTree()
-        smaller_tree.set_root(node.get_left())
-        bigger_tree = AVLTree()
-        bigger_tree.set_root(node.get_right())
+        smaller_tree = AVLTree.tree_from_root(node.get_left())
+        bigger_tree = AVLTree.tree_from_root(node.get_right())
 
         parent = node.get_parent()
         while parent is not None:
             if node.is_left_son():
-                right_subtree = AVLTree()
-                right_subtree.set_root(parent.get_right())
+                right_subtree = AVLTree.tree_from_root(parent.get_right())
                 bigger_tree.join(right_subtree, parent.get_key(), parent.get_value())
             else:
-                left_subtree = AVLTree()
-                left_subtree.set_root(parent.get_left())
+                left_subtree = AVLTree.tree_from_root(parent.get_left())
                 left_subtree.join(smaller_tree, parent.get_key(), parent.get_value())
                 smaller_tree = left_subtree
 
