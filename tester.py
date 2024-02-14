@@ -120,7 +120,8 @@ class AVLTester:
         return rejoined_trees
 
 # -------------------------------- Validity Checkers -------------------------------- #
-    def is_bst_valid(self, node, min_val=float('-inf'), max_val=float('inf')) -> bool:
+    @staticmethod
+    def is_bst_valid(node, min_val=float('-inf'), max_val=float('inf')) -> bool:
         if not node.is_real_node():
             return True
 
@@ -129,56 +130,60 @@ class AVLTester:
             return False
 
         # Recursively check left and right subtrees with updated valid ranges
-        return (self.is_bst_valid(node.left, min_val, node.key) and
-                self.is_bst_valid(node.right, node.key, max_val))
+        return (AVLTester.is_bst_valid(node.left, min_val, node.key) and
+                AVLTester.is_bst_valid(node.right, node.key, max_val))
 
-    def is_avl_valid(self, root: AVLNode) -> bool:
+    @staticmethod
+    def is_avl_valid(root: AVLNode) -> bool:
         if not(root.is_real_node()):
             return True
 
         # Check AVL properties
-        return (self.is_avl_valid(root.get_left()) and
-                self.is_avl_valid(root.get_right()) and
+        return (AVLTester.is_avl_valid(root.get_left()) and
+                AVLTester.is_avl_valid(root.get_right()) and
                 abs(root.get_balance_factor()) <= 1)
 
-    def is_valid_tree(self, tree: AVLTree) -> bool:
-        is_bst = self.is_bst_valid(tree.get_root())
-        is_avl = self.is_avl_valid(tree.get_root())
+    @staticmethod
+    def is_valid_tree(tree: AVLTree) -> bool:
+        is_bst = AVLTester.is_bst_valid(tree.get_root())
+        is_avl = AVLTester.is_avl_valid(tree.get_root())
         return is_bst and is_avl
 
     def get_validity_after(self, trees: [AVLTree], func_name: str):
         func_stats = self.stats[func_name]
         for tree in trees:
-            if not self.is_valid_tree(tree):
+            if not AVLTester.is_valid_tree(tree):
                 func_stats.n_invalid_trees += 1
                 func_stats.invalid_trees.append(tree)
-            if not self.is_size_valid(tree):
+            if not AVLTester.is_size_valid(tree):
                 func_stats.n_invalid_size += 1
                 func_stats.invalid_size_trees.append(tree)
-            if not self.is_min_valid(tree) or not self.is_max_valid(tree):
+            if not AVLTester.is_min_valid(tree) or not AVLTester.is_max_valid(tree):
                 func_stats.n_invalid_edge += 1
                 func_stats.invalid_edge_trees.append(tree)
 
-    def calc_tree_size(self, node: AVLNode) -> int:
+    @staticmethod
+    def calc_tree_size(node: AVLNode) -> int:
         if not node.is_real_node():
             return 0
 
-        left_size = self.calc_tree_size(node.get_left())
-        right_size = self.calc_tree_size(node.get_right())
+        left_size = AVLTester.calc_tree_size(node.get_left())
+        right_size = AVLTester.calc_tree_size(node.get_right())
         return left_size + right_size + 1
 
-    def is_size_valid(self, tree: AVLTree, size=0) -> bool:
-        return tree.size == self.calc_tree_size(tree.get_root())
+    @staticmethod
+    def is_size_valid(tree: AVLTree) -> bool:
+        return tree.size == AVLTester.calc_tree_size(tree.get_root())
 
     @staticmethod
-    def is_min_valid(self, tree: AVLTree) -> bool:
-        if tree.size > 0:
+    def is_min_valid(tree: AVLTree) -> bool:
+        if tree.get_root().is_real_node():
             return tree.get_min() == tree.calc_min_node()
         return True
 
     @staticmethod
     def is_max_valid(tree: AVLTree):
-        if tree.size > 0:
+        if tree.get_root().is_real_node():
             return tree.get_max() == tree.calc_max_node()
         return True
 
