@@ -174,7 +174,9 @@ class AVLNode(object):
     @return: True if self is a left son, False O.W.
     """
     def is_left_son(self):
-        return self.parent.left
+        if self.parent is not None:
+            return self.parent.left == self
+        return False
 
 
 """
@@ -193,6 +195,14 @@ class AVLTree(object):
         self.size: int = 0
         self.min_node: AVLNode = self.root
         self.max_node: AVLNode = self.root
+
+    def calc_tree_size(self, node: AVLNode) -> int:
+        if not node.is_real_node():
+            return 0
+
+        left_size = self.calc_tree_size(node.get_left())
+        right_size = self.calc_tree_size(node.get_right())
+        return left_size + right_size + 1
 
     """finds the node with the maximal key
     
@@ -255,7 +265,9 @@ class AVLTree(object):
 
     def set_root(self, node: AVLNode):
         self.root = node
+        # self.size = self.calc_tree_size(self.root)
         return None
+
 
     """performs an edge rotation between a parent node and its left son
 
@@ -552,7 +564,7 @@ class AVLTree(object):
             lst.append((curr.key, curr.value))
             curr = self.successor(curr)
         return lst
-        #return self.avl_to_array_help(self.root)
+
     """returns the number of items in dictionary 
 
     @rtype: int
@@ -580,15 +592,15 @@ class AVLTree(object):
         bigger_tree.set_root(node.get_right())
 
         parent = node.get_parent()
-        while parent:
+        while parent is not None:
             if node.is_left_son():
                 right_subtree = AVLTree()
                 right_subtree.set_root(parent.get_right())
-                bigger_tree.join(right_subtree, parent.get_left(), parent.get_right())
+                bigger_tree.join(right_subtree, parent.get_key(), parent.get_value())
             else:
                 left_subtree = AVLTree()
                 left_subtree.set_root(parent.get_left())
-                left_subtree.join(smaller_tree, parent.get_key(), parent.get_val())
+                left_subtree.join(smaller_tree, parent.get_key(), parent.get_value())
                 smaller_tree = left_subtree
 
             node = parent
@@ -648,7 +660,7 @@ class AVLTree(object):
     """
 
     def get_anchor(self, height: int, is_min=True) -> AVLNode:
-        assert height > self.get_root().get_height()
+        assert height < self.get_root().is_real_node()
 
         anchor = self.get_min() if is_min else self.get_max()
         while anchor.get_height() < height - 1:
