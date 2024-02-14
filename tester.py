@@ -173,19 +173,13 @@ class AVLTester:
     @staticmethod
     def is_min_valid(self, tree: AVLTree) -> bool:
         if tree.size > 0:
-            min_node = tree.calc_min_node()
-            if min_node is None:
-                return True
-            return tree.get_min() == min_node
+            return tree.get_min() == tree.calc_min_node()
         return True
 
     @staticmethod
     def is_max_valid(tree: AVLTree):
         if tree.size > 0:
-            max_node = tree.calc_max_node()
-            if max_node is None:
-                return True
-            return tree.get_max() == max_node
+            return tree.get_max() == tree.calc_max_node()
         return True
 
 # -------------------------------- Actual Tester -------------------------------- #
