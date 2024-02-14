@@ -259,6 +259,12 @@ class AVLTree(object):
         self.min_node = tree.min_node
         self.max_node = tree.max_node
 
+    @staticmethod
+    def tree_from_root(root: AVLNode):
+        tree = AVLTree()
+        tree.insert(root.get_key(), root.get_value())
+        return tree
+
     def rotate_left(self, parent: AVLNode, normal_trigger: bool = True):
         r_val = 1
         if normal_trigger and parent.left.is_real_node() and parent.left.right.height - parent.left.left.height > 0:
@@ -593,7 +599,7 @@ class AVLTree(object):
     @type tree2: AVLTree 
     @param tree2: a dictionary to be joined with self
     @type key: int 
-    @param key: The key separting self with tree2
+    @param key: The key separating self with tree2
     @type val: any 
     @param val: The value attached to key
     @pre: all keys in self are smaller than key and all keys in tree2 are larger than key
@@ -602,21 +608,21 @@ class AVLTree(object):
     """
 
     def join(self, tree2, key, val):
-        tree1_height = self.get_root().get_height()
-        tree2_height = tree2.get_root().get_height()
+        tree1_height = self.root.get_height()
+        tree2_height = tree2.root.get_height()
         connector = AVLNode(key, val)
 
         if tree1_height <= tree2_height:  # join using min anchor from tree2
             anchor = tree2.get_anchor(tree1_height, is_min=True)
-            connector.set_left(self.get_root())
+            connector.set_left(self.root)
             connector.set_right(anchor)
             connector.set_parent(anchor.get_parent())
             anchor.set_parent(connector)
-            self.set_root(tree2.get_root())
+            self.replace_tree(tree2)
 
         else:  # join using max anchor from tree1
             anchor = self.get_anchor(tree2_height, is_min=False)
-            connector.set_right(tree2.get_root())
+            connector.set_right(tree2.root)
             connector.set_left(anchor)
             connector.set_parent(anchor.get_parent())
             anchor.set_parent(connector)
@@ -658,5 +664,3 @@ class AVLTree(object):
         if current_node.is_real_node():
             return current_node
         return None
-
-pass
