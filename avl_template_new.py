@@ -165,7 +165,7 @@ class AVLNode(object):
     """
 
     def is_real_node(self):
-        return False if self.key is None else True
+        return self.key is not None
 
     """returns whether self is a left son or a right son
     
@@ -401,7 +401,7 @@ class AVLTree(object):
             self.min_node = new_node
             self.max_node = new_node
             return 0
-        if key > self.max_node.key:
+        elif key > self.max_node.key:
             self.max_node.right.parent = None
             new_node.parent = self.max_node
             self.max_node.right = new_node
@@ -499,6 +499,16 @@ class AVLTree(object):
         if self.size == 0:
             self.root = AVLNode(None, None)
             return 0
+        if node is self.min_node:
+            if node is self.root:
+                self.min_node = self.max_node
+            else:
+                self.min_node = node.parent
+        elif node is self.max_node:
+            if node is self.root:
+                self.max_node = self.min_node
+            else:
+                self.max_node = node.parent
         if node.right.is_real_node() and node.left.is_real_node():
             current_node = node.right
             while current_node.left.is_real_node():
@@ -516,15 +526,15 @@ class AVLTree(object):
         @returns: the successor of node or None if node has no successor
         """
     def successor(self, node):
-        if node is self.max_node:
-           curr = None
-        elif node.right.is_real_node():
+        if node is self.max_node or not(node.is_real_node()) or node is None:
+           return None
+        if node.right.is_real_node():
             curr = node.right
             while curr.left.is_real_node():
                 curr = curr.left
         else:
             curr = node
-            while curr is curr.parent.right:
+            while curr.parent is not None and curr is curr.parent.right:
                 curr = curr.parent
             curr = curr.parent
         return curr
@@ -542,7 +552,7 @@ class AVLTree(object):
             lst.append((curr.key, curr.value))
             curr = self.successor(curr)
         return lst
-
+        #return self.avl_to_array_help(self.root)
     """returns the number of items in dictionary 
 
     @rtype: int
