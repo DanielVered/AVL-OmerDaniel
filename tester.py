@@ -1,7 +1,7 @@
 import random
 from avl_template_new import AVLNode, AVLTree
 
-FUNCS_NAMES = ['insert', 'delete', 'search', 'join', 'split']
+FUNCS_NAMES = ['insert', 'delete', 'search', 'split', 'join']
 
 
 class FuncStats:
@@ -58,8 +58,7 @@ class AVLTester:
         return trees
 
     def get_rand_node(self, tree: AVLTree):
-        size = tree.size
-        if size == 0:
+        if tree.size == 0:
             return None
         key = random.choice(tree.avl_to_array())[0]
         self.stats['search'].n_trials += 1
@@ -93,9 +92,9 @@ class AVLTester:
             try:
                 split_trees['trees'].extend(tree.split(node))
                 split_trees['nodes'].append(node)
-            except:
+            except BaseException as err:
                 self.stats['split'].n_failures += 1
-                self.stats['split'].failed_inputs.append({'tree': tree, 'node': node})
+                self.stats['split'].failed_inputs.append({'tree': tree, 'node': node, 'exception': str(err)})
         return split_trees
 
     def rejoin_trees(self, split_trees: dict) -> [AVLTree]:
@@ -107,12 +106,13 @@ class AVLTester:
             self.stats['join'].n_trials += 1
             try:
                 rejoined_trees.append(left_subtree.join(right_subtree, node.get_key(), node.get_val()))
-            except:
+            except BaseException as err:
                 self.stats['join'].n_failures += 1
                 input = {
                     'left_subtree': left_subtree
                     , 'right_subtree': right_subtree
                     , 'node': node
+                    , 'exception': str(err)
                 }
                 self.stats['join'].failed_inputs.append(input)
         return rejoined_trees
@@ -202,8 +202,17 @@ class AVLTester:
             print(f'invalid tree size rate: {round(func_stats.n_invalid_size / self.n_trees, resolution)}')
             print(f'invalid tree max|min nodes rate: {round(func_stats.n_invalid_edge / self.n_trees, resolution)}')
 
+    def get_failed_inputs(self, func_name: str) -> [dict]:
+        assert func_name in FUNCS_NAMES
+        return self.stats[func_name].failed_inputs
 
-tester = AVLTester(min_key=0, max_key=10**2, n_trees=10**3)
+    def get_exceptions(self, func_name: str) -> [str]:
+        inputs = self.get_failed_inputs(func_name)
+        exceptions = [inp['exception'] for inp in inputs]
+        return {err: exceptions.count(err) for err in exceptions}
+
+
+tester = AVLTester(min_key=0, max_key=10**3, n_trees=10**3)
 tester.test()
 tester.print_stats(resolution=3)
 
