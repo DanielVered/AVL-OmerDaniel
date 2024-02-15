@@ -659,7 +659,8 @@ class AVLTree(object):
                 anchor_parent.set_right(connector)
             anchor.set_parent(connector)
 
-        # tree2.root = AVLNode(None, None)
+        tree2.root = AVLNode(None, None)
+        connector.auto_reset_height()
         self.size = total_size
         self.rebalance_tree(connector, is_insert=True)
         self.fix_edges()
