@@ -16,6 +16,8 @@ class FuncStats:
         self.invalid_size_trees = []
         self.n_invalid_edge = 0  # min/max are invalid
         self.invalid_edge_trees = []  # min/max are invalid
+        self.n_invalid_height = 0
+        self.invalid_height_trees = []
 
 
 class AVLTester:
@@ -102,6 +104,7 @@ class AVLTester:
     def rejoin_trees(self, split_trees: dict) -> [AVLTree]:
         rejoined_trees = []
         trees = split_trees['trees']
+        AVLTester.fix_sizes(trees)
         nodes = split_trees['nodes']
         for i in range(len(nodes)):
             left_subtree = trees[2*i]
@@ -121,6 +124,11 @@ class AVLTester:
                 }
                 self.stats['join'].failed_inputs.append(input)
         return rejoined_trees
+
+    @staticmethod
+    def fix_sizes(trees: [AVLTree]):
+        for tree in trees:
+            tree.size = AVLTree.calc_tree_size(tree.get_root())
 
 # -------------------------------- Validity Checkers -------------------------------- #
     @staticmethod
@@ -164,6 +172,10 @@ class AVLTester:
             if not AVLTester.is_min_valid(tree) or not AVLTester.is_max_valid(tree):
                 func_stats.n_invalid_edge += 1
                 func_stats.invalid_edge_trees.append(tree)
+            if not AVLTester.are_height_valid(tree.get_root()):
+                func_stats.n_invalid_height += 1
+                func_stats.invalid_height_trees.append(tree)
+
 
     @staticmethod
     def calc_tree_size(node: AVLNode) -> int:
@@ -188,7 +200,26 @@ class AVLTester:
     def is_max_valid(tree: AVLTree):
         if tree.get_root().is_real_node():
             return tree.get_max() == tree.calc_max_node()
-        return True
+        return
+
+    @staticmethod
+    def are_height_valid(node: AVLNode):
+        if not node.is_real_node():
+            return node.height == -1
+
+        return node.height == max(node.left.height, node.right.height) + 1
+
+
+    @staticmethod
+    def is_joinable(tree1, node, tree2):
+        if not tree1.get_max().is_real_node() and not tree2.get_min().is_real_node():
+            return True
+        elif not tree1.get_max().is_real_node():
+            return node.key < tree2.get_min().get_key()
+        elif not tree2.get_min().is_real_node():
+            return tree1.get_max().get_key() < node.key
+        else:
+            return tree1.get_max().get_key() < node.get_key() < tree2.get_min().get_key()
 
 # -------------------------------- Actual Tester -------------------------------- #
     def test(self):
@@ -213,6 +244,7 @@ class AVLTester:
             print(f'invalid trees (avl & bst properties) rate: {round(func_stats.n_invalid_trees / self.n_trees, resolution)}')
             print(f'invalid tree size rate: {round(func_stats.n_invalid_size / self.n_trees, resolution)}')
             print(f'invalid tree max|min nodes rate: {round(func_stats.n_invalid_edge / self.n_trees, resolution)}')
+            print(f'invalid tree heights rate: {round(func_stats.n_invalid_height / self.n_trees, resolution)}')
             print(f"exceptions: \n  {self.get_exceptions(func_name)}")
 
     def get_failed_inputs(self, func_name: str) -> [dict]:
