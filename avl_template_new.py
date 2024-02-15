@@ -660,10 +660,14 @@ class AVLTree(object):
             anchor.set_parent(connector)
 
         tree2.root = AVLNode(None, None)
-        connector.auto_reset_height()
         self.size = total_size
         self.rebalance_tree(connector, is_insert=True)
         self.fix_edges()
+
+        node = connector
+        while node is not None:
+            node.auto_reset_height()
+            node = node.get_parent()
 
         return abs(tree1_height - tree2_height)
 
