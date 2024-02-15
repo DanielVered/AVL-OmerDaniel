@@ -192,15 +192,11 @@ class AVLTester:
 
     @staticmethod
     def is_min_valid(tree: AVLTree) -> bool:
-        if tree.get_root().is_real_node():
-            return tree.get_min() == tree.calc_min_node()
-        return True
+        return tree.get_min().get_key() == tree.calc_min_node().get_key()
 
     @staticmethod
     def is_max_valid(tree: AVLTree):
-        if tree.get_root().is_real_node():
-            return tree.get_max() == tree.calc_max_node()
-        return
+        return tree.get_max().get_key() == tree.calc_max_node().get_key()
 
     @staticmethod
     def are_height_valid(node: AVLNode):
@@ -208,7 +204,6 @@ class AVLTester:
             return node.height == -1
 
         return node.height == max(node.left.height, node.right.height) + 1
-
 
     @staticmethod
     def is_joinable(tree1, node, tree2):
