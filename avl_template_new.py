@@ -4,7 +4,6 @@
 # id2      - complete info
 # name2    - Omer Naziri
 
-
 """A class represnting a node in an AVL tree"""
 
 
@@ -176,12 +175,13 @@ class AVLTree(object):
         self.min_node: AVLNode = self.root
         self.max_node: AVLNode = self.root
 
-    def calc_tree_size(self, node: AVLNode) -> int:
+    @staticmethod
+    def calc_tree_size(node: AVLNode) -> int:
         if not node.is_real_node():
             return 0
 
-        left_size = self.calc_tree_size(node.get_left())
-        right_size = self.calc_tree_size(node.get_right())
+        left_size = AVLTree.calc_tree_size(node.get_left())
+        right_size = AVLTree.calc_tree_size(node.get_right())
         return left_size + right_size + 1
 
     """finds the node with the maximal key
@@ -534,7 +534,7 @@ class AVLTree(object):
         """
     def successor(self, node):
         if node is self.max_node or not(node.is_real_node()) or node is None:
-           return None
+            return None
         if node.right.is_real_node():
             curr = node.right
             while curr.left.is_real_node():
@@ -589,11 +589,12 @@ class AVLTree(object):
             if node.is_left_son():
                 right_subtree = AVLTree.tree_from_root(parent.get_right())
                 bigger_tree.join(right_subtree, parent.get_key(), parent.get_value())
-            else:
+            else:  # node is right son
                 left_subtree = AVLTree.tree_from_root(parent.get_left())
                 left_subtree.join(smaller_tree, parent.get_key(), parent.get_value())
                 smaller_tree = left_subtree
 
+            parent.auto_reset_height()
             node = parent
             parent = node.get_parent()
 
@@ -619,24 +620,49 @@ class AVLTree(object):
         tree1_height = self.root.get_height()
         tree2_height = tree2.root.get_height()
         connector = AVLNode(key, val)
+        connector.set_right(AVLNode(None, None))
+        connector.set_left(AVLNode(None, None))
+        total_size = self.size + tree2.size + 1
 
-        if tree1_height <= tree2_height:  # join using min anchor from tree2
+        if tree2_height == -1:  # tree 2 is empty
+            self.insert(key, val)
+        elif tree1_height == -1:  # only self is empty
+            tree2.insert(key, val)
+            self.replace_tree(tree2)
+
+        elif tree1_height == tree2_height:  # just connect the trees with connector
+            connector.set_left(self.root)
+            connector.set_right(tree2.root)
+            self.root.set_parent(connector)
+            tree2.root.set_parent(connector)
+            self.root = connector
+        elif tree1_height < tree2_height:  # join using min anchor from tree2
             anchor = tree2.get_anchor(tree1_height, is_min=True)
             connector.set_left(self.root)
+            self.root.set_parent(connector)
             connector.set_right(anchor)
-            connector.set_parent(anchor.get_parent())
+            if not anchor is tree2.root:
+                anchor_parent = anchor.get_parent()
+                connector.set_parent(anchor_parent)
+                anchor_parent.set_left(connector)
             anchor.set_parent(connector)
             self.replace_tree(tree2)
 
         else:  # join using max anchor from tree1
             anchor = self.get_anchor(tree2_height, is_min=False)
             connector.set_right(tree2.root)
+            tree2.root.set_parent(connector)
             connector.set_left(anchor)
-            connector.set_parent(anchor.get_parent())
+            if not anchor is self.root:
+                anchor_parent = anchor.get_parent()
+                connector.set_parent(anchor_parent)
+                anchor_parent.set_right(connector)
             anchor.set_parent(connector)
 
+        # tree2.root = AVLNode(None, None)
+        self.size = total_size
         self.rebalance_tree(connector, is_insert=True)
-        self.size += 1 + tree2.size
+        self.fix_edges()
 
         return abs(tree1_height - tree2_height)
 
@@ -653,8 +679,8 @@ class AVLTree(object):
     @returns: the most left (min) or the most right (max) node (anchor) where node.height in [height, height - 1]
     """
 
-    def get_anchor(self, height: int, is_min=True) -> AVLNode:
-        assert height < self.get_root().is_real_node()
+    def get_anchor(self, height: int, is_min) -> AVLNode:
+        assert height < self.get_root().get_height()
 
         anchor = self.get_min() if is_min else self.get_max()
         while anchor.get_height() < height - 1:
