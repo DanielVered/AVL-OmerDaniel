@@ -677,6 +677,7 @@ class AVLTree(object):
         return anchor
 
     """a function to find a node with a given key
+    @pre: node is in tree, otherwise will return None
     @return: a pointer to the desired node
     @rtype: AVLNode
     """
