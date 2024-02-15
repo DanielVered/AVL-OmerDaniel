@@ -547,6 +547,8 @@ class AVLTree(object):
 
     def avl_to_array(self):
         curr = self.min_node
+        if not(curr.is_real_node()):
+            return []
         lst = []
         while curr:
             lst.append((curr.key, curr.value))
