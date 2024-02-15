@@ -101,13 +101,16 @@ class AVLTester:
 
     def rejoin_trees(self, split_trees: dict) -> [AVLTree]:
         rejoined_trees = []
-        for i in range(len(split_trees['nodes'])):
-            left_subtree = split_trees['trees'][2*i]
-            node = split_trees['nodes'][i]
-            right_subtree = split_trees['trees'][2*i + 1]
+        trees = split_trees['trees']
+        nodes = split_trees['nodes']
+        for i in range(len(nodes)):
+            left_subtree = trees[2*i]
+            node = nodes[i]
+            right_subtree = trees[2*i + 1]
             self.stats['join'].n_trials += 1
             try:
-                rejoined_trees.append(left_subtree.join(right_subtree, node.get_key(), node.get_val()))
+                left_subtree.join(right_subtree, node.get_key(), node.get_value())
+                rejoined_trees.append(left_subtree)
             except BaseException as err:
                 self.stats['join'].n_failures += 1
                 input = {
@@ -210,6 +213,7 @@ class AVLTester:
             print(f'invalid trees (avl & bst properties) rate: {round(func_stats.n_invalid_trees / self.n_trees, resolution)}')
             print(f'invalid tree size rate: {round(func_stats.n_invalid_size / self.n_trees, resolution)}')
             print(f'invalid tree max|min nodes rate: {round(func_stats.n_invalid_edge / self.n_trees, resolution)}')
+            print(f"exceptions: \n  {self.get_exceptions(func_name)}")
 
     def get_failed_inputs(self, func_name: str) -> [dict]:
         assert func_name in FUNCS_NAMES
@@ -217,7 +221,10 @@ class AVLTester:
 
     def get_exceptions(self, func_name: str) -> [str]:
         inputs = self.get_failed_inputs(func_name)
-        exceptions = [inp['exception'] for inp in inputs]
+        try:
+            exceptions = [inp['exception'] for inp in inputs]
+        except:
+            exceptions = []
         return {err: exceptions.count(err) for err in exceptions}
 
 
