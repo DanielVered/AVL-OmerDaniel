@@ -9,7 +9,7 @@
 
 
 class AVLNode(object):
-    """Constructor, you are allowed to add more fields.
+    """Constructor, you are allowed to add more fields - Run time complexity is O(1) in worst case.
 
     @type key: int or None
     @type value: any
@@ -27,7 +27,7 @@ class AVLNode(object):
         else:
             self.height = 0
 
-    """returns the left child
+    """returns the left child - Run time complexity is O(1) in worst case
     @rtype: AVLNode
     @returns: the left child of self, None if there is no left child (if self is virtual)
     """
@@ -44,7 +44,7 @@ class AVLNode(object):
     def get_right(self):
         return self.right
 
-    """returns the parent 
+    """returns the parent - Run time complexity is O(1) in worst case
 
     @rtype: AVLNode
     @returns: the parent of self, None if there is no parent
@@ -53,7 +53,7 @@ class AVLNode(object):
     def get_parent(self):
         return self.parent
 
-    """returns the key
+    """returns the key - Run time complexity is O(1) in worst case
 
         @rtype: int or None
         @returns: the key of self, None if the node is virtual
@@ -62,7 +62,7 @@ class AVLNode(object):
     def get_key(self):
         return self.key
 
-    """returns the value
+    """returns the value - Run time complexity is O(1) in worst case
 
     @rtype: any
     @returns: the value of self, None if the node is virtual
@@ -71,7 +71,7 @@ class AVLNode(object):
     def get_value(self):
         return self.value
 
-    """returns the height
+    """returns the height - Run time complexity is O(1) in worst case
 
     @rtype: int
     @returns: the height of self, -1 if the node is virtual
@@ -80,7 +80,7 @@ class AVLNode(object):
     def get_height(self):
         return self.height
 
-    """sets left child
+    """sets left child - Run time complexity is O(1) in worst case
 
     @type node: AVLNode
     @param node: a node
@@ -90,7 +90,7 @@ class AVLNode(object):
         self.left = node
         return None
 
-    """sets right child
+    """sets right child - Run time complexity is O(1) in worst case
 
     @type node: AVLNode
     @param node: a node
@@ -100,7 +100,7 @@ class AVLNode(object):
         self.right = node
         return None
 
-    """sets parent
+    """sets parent - Run time complexity is O(1) in worst case
 
     @type node: AVLNode
     @param node: a node
@@ -110,7 +110,7 @@ class AVLNode(object):
         self.parent = node
         return None
 
-    """sets key
+    """sets key - Run time complexity is O(1) in worst case
 
     @type key: int or None
     @param key: key
@@ -120,7 +120,7 @@ class AVLNode(object):
         self.key = key
         return None
 
-    """sets value
+    """sets value - Run time complexity is O(1) in worst case
 
     @type value: any
     @param value: data
@@ -130,7 +130,7 @@ class AVLNode(object):
         self.value = value
         return None
 
-    """sets the height of the node
+    """sets the height of the node - Run time complexity is O(1) in worst case
 
     @type h: int
     @param h: the height
@@ -140,6 +140,11 @@ class AVLNode(object):
         self.height = h
         return None
 
+    """calculates the height of the node based on its sons' heights - Run time complexity is O(1) in worst case
+
+        @rtype: bool
+        @returns: True if height of the node has changed or False otherwise
+        """
     def auto_reset_height(self):
         if self.is_real_node():
             tmp = self.height
@@ -147,7 +152,7 @@ class AVLNode(object):
             return tmp != self.height
         return False
 
-    """returns node's balance factor 
+    """returns node's balance factor - Run time complexity is O(1) in worst case
 
     @rtype: int
     @returns: node's balance factor, should satisfy |BF| <= 2.
@@ -158,7 +163,7 @@ class AVLNode(object):
             return self.right.height - self.left.height
         return 0
 
-    """returns whether self is not a virtual node 
+    """returns whether self is not a virtual node - Run time complexity is O(1) in worst case
 
     @rtype: bool
     @returns: False if self is a virtual node, True otherwise.
@@ -167,7 +172,7 @@ class AVLNode(object):
     def is_real_node(self):
         return self.key is not None
 
-    """returns whether self is a left son or a right son
+    """returns whether self is a left son or a right son - Run time complexity is O(1) in worst case
     
 `   @pre: self has a parent
     @rtype: bool
@@ -184,7 +189,7 @@ A class implementing the ADT Dictionary, using an AVL tree.
 
 class AVLTree(object):
     """
-    Constructor, you are allowed to add more fields.
+    Constructor, you are allowed to add more fields. - Run time complexity is O(1) in worst case
 
     """
 
@@ -194,7 +199,7 @@ class AVLTree(object):
         self.min_node: AVLNode = self.root
         self.max_node: AVLNode = self.root
 
-    """finds the node with the maximal key
+    """finds the node with the maximal key - Run time complexity is O(log n) in worst case
     
     @rtype: AVLNode
     @return: pointer to maximal node in AVLTree
@@ -210,7 +215,7 @@ class AVLTree(object):
                 right_son = right_son.get_right()
         return curr_node
 
-    """finds the node with the minimal key
+    """finds the node with the minimal key - Run time complexity is O(log n) in worst case
 
     @rtype: AVLNode
     @return: pointer to minimal node in AVLTree
@@ -226,7 +231,7 @@ class AVLTree(object):
                 left_son = left_son.get_left()
         return curr_node
 
-    """returns the root of the tree representing the dictionary
+    """returns the root of the tree representing the dictionary - Run time complexity is O(1) in worst case
 
     @rtype: AVLNode
     @returns: the root, None if the dictionary is empty
@@ -235,7 +240,7 @@ class AVLTree(object):
     def get_root(self):
         return self.root
 
-    """returns the min node of the AVLTree.
+    """returns the min node of the AVLTree - Run time complexity is O(1) in worst case
 
     @rtype: AVLNode
     @returns: the min node of the AVLTree, or None if empty.
@@ -244,7 +249,7 @@ class AVLTree(object):
     def get_min(self) -> AVLNode:
         return self.min_node
 
-    """returns the max node of the AVLTree.
+    """returns the max node of the AVLTree - Run time complexity is O(1) in worst case
 
     @rtype: AVLNode
     @returns: the max node of the AVLTree, or None if empty.
@@ -257,7 +262,7 @@ class AVLTree(object):
         self.root = node
         return None
 
-    """performs an edge rotation between a parent node and its left son
+    """performs an edge rotation between a parent node and its left son - Run time complexity is O(1) in worst case
 
         @type parent: AVLNode
         @param parent: the parent node involved in the rotation
@@ -291,7 +296,7 @@ class AVLTree(object):
         son.auto_reset_height()
         return r_val
 
-    """performs an edge rotation between a parent node and its right son
+    """performs an edge rotation between a parent node and its right son - Run time complexity is O(1) in worst case
 
         @type parent: AVLNode
         @param parent: the parent node involved in the rotation
@@ -325,7 +330,7 @@ class AVLTree(object):
         son.auto_reset_height()
         return r_val
 
-    """searches for a value in the dictionary corresponding to the key
+    """searches for a value in the dictionary corresponding to the key - Run time complexity is O(log n) in worst case
 
     @type key: int
     @param key: a key to be searched
@@ -346,6 +351,7 @@ class AVLTree(object):
         return None
 
     """checks a certain path among the tree in order to rebalance the tree using right and left edge rotations
+    Run time complexity is O(log n) in worst case
 
     @type start_node: AVLNode
     @pre: start_node is a real pointer to a node in self, from which the rebalance check will begin
@@ -377,7 +383,7 @@ class AVLTree(object):
 
         return balance_ops
 
-    """inserts val at position i in the dictionary
+    """inserts val at position i in the dictionary - Run time complexity is O(log n) in worst case
 
     @type key: int
     @pre: key currently does not appear in the dictionary
@@ -427,7 +433,7 @@ class AVLTree(object):
 
         return self.rebalance_tree(new_node, True)
 
-    """swaps two nodes before deletion
+    """swaps two nodes before deletion - Run time complexity is O(1) in worst case
 
     @type full_node: AVLNode
     @pre: full_node is a real pointer to a node in self which has 2 children
@@ -458,7 +464,7 @@ class AVLTree(object):
         else:
             empty_node.parent.right = empty_node
 
-    """deletes node from the dictionary
+    """deletes node from the dictionary - Run time complexity is O(1) in worst case
 
         @type node: AVLNode
         @pre: node is a real pointer to a node in self which has less than 2 children
@@ -487,7 +493,7 @@ class AVLTree(object):
         node.parent = None
         return start_node
 
-    """deletes node from the dictionary
+    """deletes node from the dictionary - Run time complexity is O(log n) in worst case
 
     @type node: AVLNode
     @pre: node is a real pointer to a node in self
@@ -519,6 +525,7 @@ class AVLTree(object):
         return self.rebalance_tree(start_node, False)
 
     """returns an array representing dictionary by making and in-order tree journey
+        Run time complexity is O(log n) in worst case
 
         @type node: AVLNode
         @param node: node is a real pointer to a node in self
@@ -539,7 +546,7 @@ class AVLTree(object):
             curr = curr.parent
         return curr
 
-    """returns an array representing dictionary 
+    """returns an array representing dictionary - Run time complexity is O(n) in worst case
 
     @rtype: list
     @returns: a sorted list according to key of touples (key, value) representing the data structure
@@ -564,7 +571,7 @@ class AVLTree(object):
     def size(self):
         return self.size
 
-    """splits the dictionary at the i'th index
+    """splits the dictionary at the i'th index - Run time complexity is O(log n) in worst case
 
     @type node: AVLNode
     @pre: node is in self
@@ -598,7 +605,7 @@ class AVLTree(object):
 
         return [smaller_tree, bigger_tree]
 
-    """joins self with key and another AVLTree
+    """joins self with key and another AVLTree - Run time complexity is O(log n) in worst case
 
     @type tree2: AVLTree 
     @param tree2: a dictionary to be joined with self
@@ -637,6 +644,7 @@ class AVLTree(object):
         return abs(tree1_height - tree2_height)
 
     """Getting a the most left (min) or the most right (max) node (anchor) at a given height.
+    Run time complexity is O(log n) in worst case
 
     @type tree: AVLTree 
     @param tree: an AVLTree to search for an anchor
@@ -657,6 +665,13 @@ class AVLTree(object):
             anchor = anchor.get_parent()
         return anchor
 
+    """searches for a value in the dictionary corresponding to the key - Run time complexity is O(log n) in worst case
+
+        @type key: int
+        @param key: a key to be searched
+        @rtype: AVLNode
+        @returns: the AVLNode in which the key is stored
+        """
     def node_search(self, key):
         current_node = self.root
         while key != current_node.key and current_node.is_real_node():
