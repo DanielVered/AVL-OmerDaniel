@@ -1,4 +1,7 @@
 import random
+import time
+
+import pandas as pd
 from avl_template_new import AVLNode, AVLTree
 
 FUNCS_NAMES = ['insert', 'delete', 'search', 'split', 'join']
@@ -216,7 +219,62 @@ class AVLTester:
         else:
             return tree1.get_max().get_key() < node.get_key() < tree2.get_min().get_key()
 
-# -------------------------------- Actual Tester -------------------------------- #
+    # -------------------------------- Experimental Analysis -------------------------------- #
+    @staticmethod
+    def generate_rand_trees(exp: int) -> (AVLTree, AVLTree):
+        size = 1000 * 2**exp
+        keys = [i for i in range(1, size + 1)]
+        random.shuffle(keys)
+
+        tree1 = AVLTree()
+        tree2 = AVLTree()
+
+        for key in keys:
+            tree1.insert(key, key)
+            tree2.insert(key, key)
+
+        return tree1, tree2
+
+    @staticmethod
+    def random_split(tree) -> [AVLTree, AVLTree]:
+        key = random.randint(1, tree.size)
+        node = tree.node_search(key)
+        return tree.split(node)
+
+    @staticmethod
+    def max_split(tree) -> [AVLTree, AVLTree]:
+        node = tree.get_max()
+        return tree.split(node)
+
+    @staticmethod
+    def experiment():
+        res = {
+            "exponent": []
+            , "n_joins_rand": []
+            , "n_joins_max": []
+            , "total_time_rand": []
+            , "total_time_max": []
+        }
+        for exp in range(1, 11):
+            print(f"Conducting experiment for n={1000 * 2**exp} ...")
+            tree1, tree2 = AVLTester.generate_rand_trees(exp)
+            res["exponent"].append(exp)
+
+            start_rand = time.time()
+            split_trees_rand, n_joins_rand = AVLTester.random_split(tree1)
+            end_rand = time.time()
+            res["total_time_rand"].append((end_rand - start_rand) * 10**3)
+            res["n_joins_rand"].append(n_joins_rand)
+
+            start_max = time.time()
+            split_trees_max, n_joins_max = AVLTester.max_split(tree2)
+            end_max = time.time()
+            res["total_time_max"].append((end_max - start_max) * 10**3)
+            res["n_joins_max"].append(n_joins_max)
+
+        return pd.DataFrame(res)
+
+    # -------------------------------- Actual Tester -------------------------------- #
     def test(self):
         trees = self.build_trees_arr()
         self.get_validity_after(trees, func_name='insert')
@@ -255,8 +313,10 @@ class AVLTester:
         return {err: exceptions.count(err) for err in exceptions}
 
 
-tester = AVLTester(min_key=0, max_key=10**2, n_trees=10**3)
-tester.test()
-tester.print_stats(resolution=3)
+# tester = AVLTester(min_key=0, max_key=10**3, n_trees=10**3)
+# tester.test()
+# tester.print_stats(resolution=3)
+
+df = AVLTester.experiment()
 
 pass

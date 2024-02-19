@@ -570,15 +570,19 @@ class AVLTree(object):
         smaller_tree = AVLTree.tree_from_root(node.get_left())
         bigger_tree = AVLTree.tree_from_root(node.get_right())
 
+        n_joins = 0  # delete me!!
+
         parent = node.get_parent()
         while parent is not None:
             if node.is_left_son():
                 right_subtree = AVLTree.tree_from_root(parent.get_right())
                 bigger_tree.join(right_subtree, parent.get_key(), parent.get_value())
+                n_joins += 1  # delete me!!
             else:  # node is right son
                 left_subtree = AVLTree.tree_from_root(parent.get_left())
                 left_subtree.join(smaller_tree, parent.get_key(), parent.get_value())
                 smaller_tree = left_subtree
+                n_joins += 1  # delete me!!
 
             parent.auto_reset_height()
             node = parent
@@ -587,7 +591,7 @@ class AVLTree(object):
         smaller_tree.fix_edges()
         bigger_tree.fix_edges()
 
-        return [smaller_tree, bigger_tree]
+        return [smaller_tree, bigger_tree], n_joins  # fix me!!
 
     """joins self with key and another AVLTree
 
