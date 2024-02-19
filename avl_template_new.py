@@ -1,14 +1,16 @@
-# username - complete info
+# username - Daniel Vered
 # id1      - 211399969
 # name1    - Daniel Vered
 # id2      - complete info
 # name2    - Omer Naziri
 
+import time
 
-"""A class represnting a node in an AVL tree"""
+"""A class representing a node in an AVL tree"""
 
 
 class AVLNode(object):
+
     """Constructor, you are allowed to add more fields - Run time complexity is O(1) in worst case.
 
     @type key: int or None
@@ -106,7 +108,6 @@ class AVLNode(object):
     @type key: int or None
     @param key: key
     """
-
     def set_key(self, key):
         self.key = key
         return None
@@ -125,7 +126,6 @@ class AVLNode(object):
     @type h: int
     @param h: the height
     """
-
     def set_height(self, h):
         self.height = h
         return None
@@ -180,7 +180,6 @@ A class implementing the ADT Dictionary, using an AVL tree.
 class AVLTree(object):
     """
     Constructor, you are allowed to add more fields. - Run time complexity is O(1) in worst case
-
     """
     def __init__(self):
         self.root: AVLNode = AVLNode(None, None)
@@ -220,6 +219,12 @@ class AVLTree(object):
                 left_son = left_son.get_left()
         return curr_node
 
+    """corrects the pointers of the min&max node in the tree
+    """
+    def fix_edges(self):
+        self.min_node = self.calc_min_node()
+        self.max_node = self.calc_max_node()
+
     """returns the root of the tree representing the dictionary - Run time complexity is O(1) in worst case
 
     @rtype: AVLNode
@@ -244,11 +249,13 @@ class AVLTree(object):
     def get_max(self) -> AVLNode:
         return self.max_node
 
-    """corrects the pointers of the min&max node in the tree
+    """returns the number of items in dictionary 
+
+    @rtype: int
+    @returns: the number of items in dictionary 
     """
-    def fix_edges(self):
-        self.min_node = self.calc_min_node()
-        self.max_node = self.calc_max_node()
+    def size(self):
+        return self.size
 
     """sets self to be the same as a given tree
     """
@@ -563,14 +570,6 @@ class AVLTree(object):
             curr = self.successor(curr)
         return lst
 
-    """returns the number of items in dictionary 
-
-    @rtype: int
-    @returns: the number of items in dictionary 
-    """
-    def size(self):
-        return self.size
-
     """splits the dictionary at the i'th index - Run time complexity is O(log n) in worst case
 
     @type node: AVLNode
@@ -706,12 +705,6 @@ class AVLTree(object):
             anchor = anchor.get_parent()
         return anchor
 
-    """a function to find a node with a given key
-    @pre: node is in tree, otherwise will return None
-    @return: a pointer to the desired node
-    @rtype: AVLNode
-    """
-    def node_search(self, key) -> AVLNode:
     """searches for a value in the dictionary corresponding to the key - Run time complexity is O(log n) in worst case
 
         @type key: int
@@ -719,7 +712,7 @@ class AVLTree(object):
         @rtype: AVLNode
         @returns: the AVLNode in which the key is stored
         """
-    def node_search(self, key):
+    def node_search(self, key) -> AVLNode | None:
         current_node = self.root
         while key != current_node.key and current_node.is_real_node():
             if current_node.key > key:
