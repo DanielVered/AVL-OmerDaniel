@@ -236,41 +236,49 @@ class AVLTester:
         return tree1, tree2
 
     @staticmethod
-    def random_split(tree) -> [AVLTree, AVLTree]:
+    def random_split(tree: AVLTree, res: dict) -> [AVLTree, AVLTree]:
         key = random.randint(1, tree.size)
         node = tree.node_search(key)
-        return tree.split(node)
+        # print("-- random: splitting on key:", node.key)
+
+        start = time.time()
+        split_trees, n_joins, max_join_time = tree.split(node)
+        end = time.time()
+        res["split_type"].append("random node")
+        res["total_time"].append((end - start) * 10 ** 6)
+        res["n_joins"].append(n_joins)
+        res["max_join_time"].append(max_join_time)
 
     @staticmethod
-    def max_split(tree) -> [AVLTree, AVLTree]:
+    def max_split(tree: AVLTree, res: dict) -> [AVLTree, AVLTree]:
         node = tree.get_max()
-        return tree.split(node)
+        # print("-- max: splitting on key:", node.key)
+
+        start = time.time()
+        split_trees, n_joins, max_join_time = tree.split(node)
+        end = time.time()
+        res["split_type"].append("max node")
+        res["total_time"].append((end - start) * 10 ** 6)
+        res["n_joins"].append(n_joins)
+        res["max_join_time"].append(max_join_time)
 
     @staticmethod
     def experiment():
         res = {
             "exponent": []
-            , "n_joins_rand": []
-            , "n_joins_max": []
-            , "total_time_rand": []
-            , "total_time_max": []
+            , "split_type": []
+            , "n_joins": []
+            , "total_time": []
+            , "max_join_time": []
         }
+
         for exp in range(1, 11):
             print(f"Conducting experiment for n={1000 * 2**exp} ...")
             tree1, tree2 = AVLTester.generate_rand_trees(exp)
-            res["exponent"].append(exp)
+            res["exponent"].extend([exp, exp])
 
-            start_rand = time.time()
-            split_trees_rand, n_joins_rand = AVLTester.random_split(tree1)
-            end_rand = time.time()
-            res["total_time_rand"].append((end_rand - start_rand) * 10**3)
-            res["n_joins_rand"].append(n_joins_rand)
-
-            start_max = time.time()
-            split_trees_max, n_joins_max = AVLTester.max_split(tree2)
-            end_max = time.time()
-            res["total_time_max"].append((end_max - start_max) * 10**3)
-            res["n_joins_max"].append(n_joins_max)
+            AVLTester.random_split(tree1, res)
+            AVLTester.max_split(tree2, res)
 
         return pd.DataFrame(res)
 
