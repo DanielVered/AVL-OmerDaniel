@@ -35,7 +35,7 @@ class AVLNode(object):
     def get_left(self):
         return self.left
 
-    """returns the right child
+    """returns the right child - Run time complexity is O(1) in worst case
 
     @rtype: AVLNode
     @returns: the right child of self, None if there is no right child (if self is virtual)
@@ -219,7 +219,7 @@ class AVLTree(object):
                 left_son = left_son.get_left()
         return curr_node
 
-    """corrects the pointers of the min&max node in the tree
+    """corrects the pointers of the min&max node in the tree - Run time complexity is O(log n) in worst case
     """
     def fix_edges(self):
         self.min_node = self.calc_min_node()
@@ -249,7 +249,7 @@ class AVLTree(object):
     def get_max(self) -> AVLNode:
         return self.max_node
 
-    """returns the number of items in dictionary 
+    """returns the number of items in dictionary - Run time complexity is O(1) in worst case
 
     @rtype: int
     @returns: the number of items in dictionary 
@@ -257,7 +257,7 @@ class AVLTree(object):
     def size(self):
         return self.size
 
-    """sets self to be the same as a given tree
+    """sets self to be the same as a given tree - Run time complexity is O(1) in worst case
     """
     def replace_tree(self, tree):
         self.root = tree.root
@@ -265,7 +265,7 @@ class AVLTree(object):
         self.min_node = tree.min_node
         self.max_node = tree.max_node
 
-    """An alternative constructor to initiate a tree from a root.
+    """An alternative constructor to initiate a tree from a root - Run time complexity is O(1) in worst case
     @type root: AVLNode
     @return: an AVLTree whose root is the one given
     @attention: the returned tree will have an inconsistency size.
@@ -591,22 +591,22 @@ class AVLTree(object):
         while parent is not None:
             if node.is_left_son():
                 right_subtree = AVLTree.tree_from_root(parent.get_right())
-                # start_time = time.time()  # delete me!!
+                start_time = time.time()  # delete me!!
                 bigger_tree.join(right_subtree, parent.get_key(), parent.get_value())
-                # end_time = time.time()  # delete me!!
-                # total_time = end_time - start_time  # delete me!!
-                # n_joins += 1  # delete me!!
+                end_time = time.time()  # delete me!!
+                total_time = end_time - start_time  # delete me!!
+                n_joins += 1  # delete me!!
             else:  # node is right son
                 left_subtree = AVLTree.tree_from_root(parent.get_left())
-                # start_time = time.time()  # delete me!!
+                start_time = time.time()  # delete me!!
                 left_subtree.join(smaller_tree, parent.get_key(), parent.get_value())
-                # end_time = time.time()  # delete me!!
-                # total_time = end_time - start_time  # delete me!!
-                # n_joins += 1  # delete me!!
+                end_time = time.time()  # delete me!!
+                total_time = end_time - start_time  # delete me!!
+                n_joins += 1  # delete me!!
                 smaller_tree = left_subtree
 
-            # if total_time > max_join_time:
-            #     max_join_time = total_time
+            if total_time > max_join_time:
+                max_join_time = total_time
 
             parent.auto_reset_height()
             node = parent
@@ -615,7 +615,7 @@ class AVLTree(object):
         smaller_tree.fix_edges()
         bigger_tree.fix_edges()
 
-        return [smaller_tree, bigger_tree]  #, n_joins, max_join_time * 10**6  # fix me!!
+        return [smaller_tree, bigger_tree] , n_joins, max_join_time * 10**6  # fix me!!
 
     """joins self with key and another AVLTree - Run time complexity is O(log n) in worst case
 
