@@ -21,6 +21,8 @@ class FuncStats:
         self.invalid_edge_trees = []  # min/max are invalid
         self.n_invalid_height = 0
         self.invalid_height_trees = []
+        self.n_invalid_avl_to_array = 0
+        self.invalid_avls_to_array = []
 
 
 class AVLTester:
@@ -65,7 +67,10 @@ class AVLTester:
     def get_rand_node(self, tree: AVLTree):
         if tree.size == 0:
             return None
-        key = random.choice(tree.avl_to_array())[0]
+        arr = tree.avl_to_array()
+        if len(arr) == 0:
+            return None
+        key = random.choice(arr)[0]
         self.stats['search'].n_trials += 1
         try:
             node = tree.node_search(key)
@@ -128,10 +133,17 @@ class AVLTester:
                 self.stats['join'].failed_inputs.append(input)
         return rejoined_trees
 
+    def validate_avl_to_array(self, trees: [AVLTree], func_name: str):
+        func_stats = self.stats[func_name]
+        for tree in trees:
+            if tree.size != len(tree.avl_to_array()):
+                func_stats.n_invalid_avl_to_array += 1
+                func_stats.invalid_avls_to_array.append({'tree': tree, 'size': tree.size, 'array': tree.avl_to_array()})
+
     @staticmethod
     def fix_sizes(trees: [AVLTree]):
         for tree in trees:
-            tree.size = AVLTree.calc_tree_size(tree.get_root())
+            tree.size = AVLTester.calc_tree_size(tree.get_root())
 
 # -------------------------------- Validity Checkers -------------------------------- #
     @staticmethod
@@ -286,15 +298,18 @@ class AVLTester:
     def test(self):
         trees = self.build_trees_arr()
         self.get_validity_after(trees, func_name='insert')
+        self.validate_avl_to_array(trees, func_name='insert')
 
         self.delete_rand_nodes(trees)
         self.get_validity_after(trees, func_name='delete')
+        self.validate_avl_to_array(trees, func_name='delete')
 
         split_trees = self.split_trees(trees)
         self.get_validity_after(split_trees['trees'], func_name='split')
 
         rejoined_trees = self.rejoin_trees(split_trees)
         self.get_validity_after(rejoined_trees, func_name='join')
+        self.validate_avl_to_array(trees, func_name='join')
 
     def print_stats(self, resolution: int):
         for func_name in self.stats.keys():
@@ -306,6 +321,7 @@ class AVLTester:
             print(f'invalid tree size rate: {round(func_stats.n_invalid_size / self.n_trees, resolution)}')
             print(f'invalid tree max|min nodes rate: {round(func_stats.n_invalid_edge / self.n_trees, resolution)}')
             print(f'invalid tree heights rate: {round(func_stats.n_invalid_height / self.n_trees, resolution)}')
+            print(f'invalid arrays rate: {round(func_stats.n_invalid_avl_to_array / self.n_trees, resolution)}')
             print(f"exceptions: \n  {self.get_exceptions(func_name)}")
 
     def get_failed_inputs(self, func_name: str) -> [dict]:
@@ -321,10 +337,10 @@ class AVLTester:
         return {err: exceptions.count(err) for err in exceptions}
 
 
-# tester = AVLTester(min_key=0, max_key=10**3, n_trees=10**3)
-# tester.test()
-# tester.print_stats(resolution=3)
+tester = AVLTester(min_key=0, max_key=10**2, n_trees=10**2)
+tester.test()
+tester.print_stats(resolution=3)
 
-df = AVLTester.experiment()
+# df = AVLTester.experiment()
 
 pass

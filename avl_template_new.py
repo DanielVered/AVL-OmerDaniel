@@ -558,7 +558,7 @@ class AVLTree(object):
     """returns an array representing dictionary - Run time complexity is O(n) in worst case
 
     @rtype: list
-    @returns: a sorted list according to key of touples (key, value) representing the data structure
+    @returns: a sorted list according to key of tuples (key, value) representing the data structure
     """
     def avl_to_array(self):
         curr = self.min_node
@@ -591,22 +591,22 @@ class AVLTree(object):
         while parent is not None:
             if node.is_left_son():
                 right_subtree = AVLTree.tree_from_root(parent.get_right())
-                start_time = time.time()  # delete me!!
+                # start_time = time.time()  # delete me!!
                 bigger_tree.join(right_subtree, parent.get_key(), parent.get_value())
-                end_time = time.time()  # delete me!!
-                total_time = end_time - start_time  # delete me!!
-                n_joins += 1  # delete me!!
+                # end_time = time.time()  # delete me!!
+                # total_time = end_time - start_time  # delete me!!
+                # n_joins += 1  # delete me!!
             else:  # node is right son
                 left_subtree = AVLTree.tree_from_root(parent.get_left())
-                start_time = time.time()  # delete me!!
+                # start_time = time.time()  # delete me!!
                 left_subtree.join(smaller_tree, parent.get_key(), parent.get_value())
-                end_time = time.time()  # delete me!!
-                total_time = end_time - start_time  # delete me!!
-                n_joins += 1  # delete me!!
+                # end_time = time.time()  # delete me!!
+                # total_time = end_time - start_time  # delete me!!
+                # n_joins += 1  # delete me!!
                 smaller_tree = left_subtree
 
-            if total_time > max_join_time:
-                max_join_time = total_time
+            # if total_time > max_join_time:
+            #     max_join_time = total_time
 
             parent.auto_reset_height()
             node = parent
@@ -615,7 +615,7 @@ class AVLTree(object):
         smaller_tree.fix_edges()
         bigger_tree.fix_edges()
 
-        return [smaller_tree, bigger_tree], n_joins, max_join_time * 10**6  # fix me!!
+        return [smaller_tree, bigger_tree]  #, n_joins, max_join_time * 10**6  # fix me!!
 
     """joins self with key and another AVLTree - Run time complexity is O(log n) in worst case
 
