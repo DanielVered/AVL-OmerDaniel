@@ -541,7 +541,7 @@ class AVLTree(object):
         @rtype: AVLNode
         @returns: the successor of node or None if node has no successor
         """
-    def successor(self, node) -> AVLNode:
+    def successor(self, node) -> AVLNode | None:
         if node is self.max_node or not(node.is_real_node()) or node is None:
             return None
         if node.right.is_real_node():
@@ -691,16 +691,15 @@ class AVLTree(object):
     @type tree: AVLTree 
     @param tree: an AVLTree to search for an anchor
     @type height: int 
-    @param key: the desired height
+    @param height: the desired height
+    @pre: height < self.root.height
     @type is_min: bool 
     @param val: The value attached to key
     @pre: height is smaller than the tree root's height
     @rtype: AVLNode
     @returns: the most left (min) or the most right (max) node (anchor) where node.height in [height, height - 1]
     """
-    def get_anchor(self, height: int, is_min) -> AVLNode:
-        assert height < self.get_root().get_height()
-
+    def get_anchor(self, height: int, is_min: bool) -> AVLNode:
         anchor = self.get_min() if is_min else self.get_max()
         while anchor.get_height() < height - 1:
             anchor = anchor.get_parent()
