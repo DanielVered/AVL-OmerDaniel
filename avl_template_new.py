@@ -627,6 +627,7 @@ class AVLTree(object):
     def join(self, tree2, key, val) -> int:
         tree1_height = self.root.get_height()
         tree2_height = tree2.root.get_height()
+
         connector = AVLNode(key, val)
         connector.set_right(AVLNode(None, None))
         connector.set_left(AVLNode(None, None))

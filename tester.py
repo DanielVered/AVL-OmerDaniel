@@ -274,8 +274,9 @@ class AVLTester:
         return {err: exceptions.count(err) for err in exceptions}
 
 
-tester = AVLTester(min_key=0, max_key=10**2, n_trees=10**2)
-tester.test()
-tester.print_stats(resolution=3)
+if __name__ == 'main':
+    tester = AVLTester(min_key=0, max_key=10**2, n_trees=10**2)
+    tester.test()
+    tester.print_stats(resolution=3)
 
-pass
+    pass
