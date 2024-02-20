@@ -4,8 +4,6 @@
 # id2      - complete info
 # name2    - Omer Naziri
 
-import time
-
 """A class representing a node in an AVL tree"""
 
 
@@ -586,28 +584,24 @@ class AVLTree(object):
         bigger_tree = AVLTree.tree_from_root(node.get_right())
 
         n_joins = 0  # delete me!!
-        max_join_time = 0  # delete me!!
+        max_join_cost = 0  # delete me!!
+        total_join_cost = 0
 
         parent = node.get_parent()
         while parent is not None:
             if node.is_left_son():
                 right_subtree = AVLTree.tree_from_root(parent.get_right())
-                start_time = time.time()  # delete me!!
-                bigger_tree.join(right_subtree, parent.get_key(), parent.get_value())
-                end_time = time.time()  # delete me!!
-                total_time = end_time - start_time  # delete me!!
+                join_cost = bigger_tree.join(right_subtree, parent.get_key(), parent.get_value())
                 n_joins += 1  # delete me!!
             else:  # node is right son
                 left_subtree = AVLTree.tree_from_root(parent.get_left())
-                start_time = time.time()  # delete me!!
-                left_subtree.join(smaller_tree, parent.get_key(), parent.get_value())
-                end_time = time.time()  # delete me!!
-                total_time = end_time - start_time  # delete me!!
+                join_cost = left_subtree.join(smaller_tree, parent.get_key(), parent.get_value())
                 n_joins += 1  # delete me!!
                 smaller_tree = left_subtree
 
-            if total_time > max_join_time:
-                max_join_time = total_time
+            total_join_cost += join_cost
+            if join_cost > max_join_cost:
+                max_join_cost = join_cost
 
             parent.auto_reset_height()
             node = parent
@@ -616,7 +610,7 @@ class AVLTree(object):
         smaller_tree.fix_edges()
         bigger_tree.fix_edges()
 
-        return [smaller_tree, bigger_tree] , n_joins, max_join_time * 10**6  # fix me!!
+        return [smaller_tree, bigger_tree], n_joins, max_join_cost, total_join_cost  # fix me!!
 
     """joins self with key and another AVLTree - Run time complexity is O(log n) in worst case
 
@@ -655,7 +649,7 @@ class AVLTree(object):
             connector.set_left(self.root)
             self.root.set_parent(connector)
             connector.set_right(anchor)
-            if not anchor is tree2.root:
+            if anchor is not tree2.root:
                 anchor_parent = anchor.get_parent()
                 connector.set_parent(anchor_parent)
                 anchor_parent.set_left(connector)
@@ -667,7 +661,7 @@ class AVLTree(object):
             connector.set_right(tree2.root)
             tree2.root.set_parent(connector)
             connector.set_left(anchor)
-            if not anchor is self.root:
+            if anchor is not self.root:
                 anchor_parent = anchor.get_parent()
                 connector.set_parent(anchor_parent)
                 anchor_parent.set_right(connector)

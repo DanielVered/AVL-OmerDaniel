@@ -1,5 +1,4 @@
 import random
-import time
 import pandas as pd
 from avl_template_new import AVLNode, AVLTree
 
@@ -23,37 +22,34 @@ def generate_rand_trees(exp: int) -> (AVLTree, AVLTree):
 def random_split(tree: AVLTree, res: dict) -> [AVLTree, AVLTree]:
     key = random.randint(1, tree.size)
     node = tree.node_search(key)
-    # print("-- random: splitting on key:", node.key)
+    res["split_key"].append(node.key)
 
-    start = time.time()
-    split_trees, n_joins, max_join_time = tree.split(node)
-    end = time.time()
-    res["split_type"].append("random node")
-    res["total_time"].append((end - start) * 10 ** 6)
+    split_trees, n_joins, max_join_cost, total_join_cost = AVLTree.split(node)
+    res["split_type"].append("random")
     res["n_joins"].append(n_joins)
-    res["max_join_time"].append(max_join_time)
+    res["max_join_cost"].append(max_join_cost)
+    res["total_join_cost"].append(total_join_cost)
 
 
 def max_split(tree: AVLTree, res: dict) -> [AVLTree, AVLTree]:
     node = tree.get_max()
-    # print("-- max: splitting on key:", node.key)
+    res["split_key"].append(node.key)
 
-    start = time.time()
-    split_trees, n_joins, max_join_time = tree.split(node)
-    end = time.time()
-    res["split_type"].append("max node")
-    res["total_time"].append((end - start) * 10 ** 6)
+    split_trees, n_joins, max_join_cost, total_join_cost = AVLTree.split(node)
+    res["split_type"].append("max")
     res["n_joins"].append(n_joins)
-    res["max_join_time"].append(max_join_time)
+    res["max_join_cost"].append(max_join_cost)
+    res["total_join_cost"].append(total_join_cost)
 
 
-def experiment():
+def experiment() -> pd.DataFrame:
     res = {
         "exponent": []
         , "split_type": []
+        , "split_key": []
         , "n_joins": []
-        , "total_time": []
-        , "max_join_time": []
+        , "total_join_cost": []
+        , "max_join_cost": []
     }
 
     for exp in range(1, 11):
@@ -64,7 +60,16 @@ def experiment():
         random_split(tree1, res)
         max_split(tree2, res)
 
-    return pd.DataFrame(res)
+    df = pd.DataFrame(res)
+    df["mean_cost_per_join"] = df["total_join_cost"] / df["n_joins"]
+    df.drop(columns=["total_join_cost", "n_joins"], inplace=True)
+
+    rand = df[df["split_type"] == 'random']
+    max = df[df["split_type"] == 'max']
+
+    df = rand.merge(max, how='inner', on='exponent', suffixes=('_rand', '_max'))
+    df.drop(columns=['split_type_rand', 'split_type_max'], inplace=True)
+    return df
 
 
 df = experiment()
