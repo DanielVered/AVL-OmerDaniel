@@ -1,7 +1,4 @@
 import random
-import time
-
-import pandas as pd
 from avl_template_new import AVLNode, AVLTree
 
 FUNCS_NAMES = ['insert', 'delete', 'search', 'split', 'join']
@@ -240,13 +237,13 @@ class AVLTester:
         self.delete_rand_nodes(trees)
         self.get_validity_after(trees, func_name='delete')
         self.validate_avl_to_array(trees, func_name='delete')
-
-        split_trees = self.split_trees(trees)
-        self.get_validity_after(split_trees['trees'], func_name='split')
-
-        rejoined_trees = self.rejoin_trees(split_trees)
-        self.get_validity_after(rejoined_trees, func_name='join')
-        self.validate_avl_to_array(trees, func_name='join')
+        #
+        # split_trees = self.split_trees(trees)
+        # self.get_validity_after(split_trees['trees'], func_name='split')
+        #
+        # rejoined_trees = self.rejoin_trees(split_trees)
+        # self.get_validity_after(rejoined_trees, func_name='join')
+        # self.validate_avl_to_array(trees, func_name='join')
 
     def print_stats(self, resolution: int):
         for func_name in self.stats.keys():

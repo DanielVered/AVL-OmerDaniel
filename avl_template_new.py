@@ -511,15 +511,17 @@ class AVLTree(object):
         self.size -= 1
         if self.size == 0:
             self.root = AVLNode(None, None)
+            self.min_node = self.root
+            self.max_node = self.root
             return 0
-        if node is self.min_node:
+        elif node is self.min_node:
             if node is self.root:
                 self.min_node = self.max_node
             else:
-                self.min_node = node.parent
+                self.min_node = self.successor(self.min_node)
         elif node is self.max_node:
             if node is self.root:
-                self.max_node = self.min_node
+                self.max_node = self.predecessor(self.max_node)
             else:
                 self.max_node = node.parent
         if node.right.is_real_node() and node.left.is_real_node():
@@ -531,7 +533,7 @@ class AVLTree(object):
         start_node = self.easy_delete(node)
         return self.rebalance_tree(start_node, False)
 
-    """returns an array representing dictionary by making and in-order tree journey
+    """FIXXXXXXXXXXXXXXX MEEEEEEEEEEEEEEEEEEEEEE
         Run time complexity is O(log n) in worst case
 
         @type node: AVLNode
@@ -553,6 +555,28 @@ class AVLTree(object):
             curr = curr.parent
         return curr
 
+    """FIXXXXXXXXXXXXXXX MEEEEEEEEEEEEEEEEEEEEEE
+        Run time complexity is O(log n) in worst case
+
+        @type node: AVLNode
+        @param node: node is a real pointer to a node in self
+        @rtype: AVLNode
+        @returns: the predecessor of node or None if node has no predecessor
+        """
+    def predecessor(self, node) -> AVLNode | None:
+        if node is self.min_node or not(node.is_real_node()) or node is None:
+            return None
+        if node.left.is_real_node():
+            curr = node.left
+            while curr.right.is_real_node():
+                curr = curr.right
+        else:
+            curr = node
+            while curr.parent is not None and curr is curr.parent.left:
+                curr = curr.parent
+            curr = curr.parent
+        return curr
+
     """returns an array representing dictionary - Run time complexity is O(n) in worst case
 
     @rtype: list
@@ -560,10 +584,10 @@ class AVLTree(object):
     """
     def avl_to_array(self) -> [()]:
         curr = self.min_node
-        if not(curr.is_real_node()):
+        if not (curr.is_real_node()):
             return []
         lst = []
-        while curr:
+        while curr is not None:
             lst.append((curr.key, curr.value))
             curr = self.successor(curr)
         return lst
