@@ -515,15 +515,9 @@ class AVLTree(object):
             self.max_node = self.root
             return 0
         elif node is self.min_node:
-            if node is self.root:
-                self.min_node = self.max_node
-            else:
-                self.min_node = self.successor(self.min_node)
+            self.min_node = self.successor(self.min_node)
         elif node is self.max_node:
-            if node is self.root:
-                self.max_node = self.predecessor(self.max_node)
-            else:
-                self.max_node = node.parent
+            self.max_node = self.predecessor(self.max_node)
         if node.right.is_real_node() and node.left.is_real_node():
             current_node = node.right
             while current_node.left.is_real_node():
