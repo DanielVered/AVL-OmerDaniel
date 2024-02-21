@@ -1,7 +1,7 @@
 # username - Daniel Vered
 # id1      - 211399969
 # name1    - Daniel Vered
-# id2      - complete info
+# id2      - 318722873
 # name2    - Omer Naziri
 
 """A class representing a node in an AVL tree"""
@@ -527,7 +527,7 @@ class AVLTree(object):
         start_node = self.easy_delete(node)
         return self.rebalance_tree(start_node, False)
 
-    """FIXXXXXXXXXXXXXXX MEEEEEEEEEEEEEEEEEEEEEE
+    """Given a node in the tree, the function finds and returns its successor
         Run time complexity is O(log n) in worst case
 
         @type node: AVLNode
@@ -549,7 +549,7 @@ class AVLTree(object):
             curr = curr.parent
         return curr
 
-    """FIXXXXXXXXXXXXXXX MEEEEEEEEEEEEEEEEEEEEEE
+    """Given a node in the tree, the function finds and returns its predecessor
         Run time complexity is O(log n) in worst case
 
         @type node: AVLNode
