@@ -66,9 +66,7 @@ def random_split(tree: AVLTree, res: dict) -> [AVLTree, AVLTree]:
 
 
 def max_split(tree: AVLTree, res: dict) -> [AVLTree, AVLTree]:
-    node = tree.root.left
-    while node.right.is_real_node():
-        node = node.right
+    node = tree.predecessor(tree.root)
 
     res["split_key"].append(node.key)
     res["depth"].append(tree.root.height - node.height)
@@ -112,5 +110,7 @@ def experiment() -> pd.DataFrame:
 
 
 df = experiment()
-print(df)
-# df = df[['exponent', 'mean_cost_per_join_rand', 'max_join_cost_rand', 'mean_cost_per_join_max', 'max_join_cost_max']]
+df = df[['exponent', 'mean_cost_per_join_rand', 'max_join_cost_rand', 'mean_cost_per_join_max', 'max_join_cost_max']]
+df.to_excel('exp_res.xlsx')
+
+pass

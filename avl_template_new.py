@@ -271,7 +271,17 @@ class AVLTree(object):
     @staticmethod
     def tree_from_root(root: AVLNode):
         tree = AVLTree()
-        tree.insert(root.get_key(), root.get_value())
+        if root.parent is not None:
+            if root.is_left_son():
+                root.parent.left = AVLNode(None, None)
+            else:
+                root.parent.right = AVLNode(None, None)
+            root.set_parent(None)
+
+        tree.root = root
+        tree.max_node = tree.calc_max_node()
+        tree.min_node = tree.calc_min_node()
+
         return tree
 
     """performs an edge rotation between a parent node and its left son - Run time complexity is O(1) in worst case
@@ -664,6 +674,7 @@ class AVLTree(object):
                 anchor_parent.set_left(connector)
             anchor.set_parent(connector)
             self.replace_tree(tree2)
+            self.rebalance_tree(connector, is_insert=False)
 
         else:  # join using max anchor from tree1
             anchor = self.get_anchor(tree2_height, is_min=False)
@@ -675,10 +686,10 @@ class AVLTree(object):
                 connector.set_parent(anchor_parent)
                 anchor_parent.set_right(connector)
             anchor.set_parent(connector)
+            self.rebalance_tree(connector, is_insert=False)
 
         tree2.root = AVLNode(None, None)
         self.size = total_size
-        self.rebalance_tree(connector, is_insert=True)
         self.fix_edges()
 
         node = connector

@@ -184,7 +184,7 @@ class AVLTester:
             if not AVLTester.is_min_valid(tree) or not AVLTester.is_max_valid(tree):
                 func_stats.n_invalid_edge += 1
                 func_stats.invalid_edge_trees.append(tree)
-            if not AVLTester.are_height_valid(tree.get_root()):
+            if not AVLTester.is_height_valid(tree.get_root()):
                 func_stats.n_invalid_height += 1
                 func_stats.invalid_height_trees.append(tree)
 
@@ -211,11 +211,12 @@ class AVLTester:
         return tree.get_max().get_key() == tree.calc_max_node().get_key()
 
     @staticmethod
-    def are_height_valid(node: AVLNode):
+    def is_height_valid(node: AVLNode) -> bool:
         if not node.is_real_node():
             return node.height == -1
 
-        return node.height == max(node.left.height, node.right.height) + 1
+        node_height_valid = node.height == max(node.left.height, node.right.height) + 1
+        return node_height_valid and AVLTester.is_height_valid(node.left) and  AVLTester.is_height_valid(node.right)
 
     @staticmethod
     def is_joinable(tree1, node, tree2):
@@ -237,13 +238,13 @@ class AVLTester:
         self.delete_rand_nodes(trees)
         self.get_validity_after(trees, func_name='delete')
         self.validate_avl_to_array(trees, func_name='delete')
-        #
-        # split_trees = self.split_trees(trees)
-        # self.get_validity_after(split_trees['trees'], func_name='split')
-        #
-        # rejoined_trees = self.rejoin_trees(split_trees)
-        # self.get_validity_after(rejoined_trees, func_name='join')
-        # self.validate_avl_to_array(trees, func_name='join')
+
+        split_trees = self.split_trees(trees)
+        self.get_validity_after(split_trees['trees'], func_name='split')
+
+        rejoined_trees = self.rejoin_trees(split_trees)
+        self.get_validity_after(rejoined_trees, func_name='join')
+        self.validate_avl_to_array(trees, func_name='join')
 
     def print_stats(self, resolution: int):
         for func_name in self.stats.keys():
