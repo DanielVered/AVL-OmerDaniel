@@ -25,7 +25,7 @@ def split(node) -> []:
             join_cost = left_subtree.join(smaller_tree, parent.get_key(), parent.get_value())
             smaller_tree.replace_tree(left_subtree)
 
-        print(join_cost)
+        print(join_cost, n_joins)
         total_join_cost += join_cost
         if join_cost > max_join_cost:
             max_join_cost = join_cost
@@ -76,7 +76,7 @@ def max_split(tree: AVLTree, res: dict) -> [AVLTree, AVLTree]:
     split_and_record(tree, node, res, split_type="max")
 
 
-def experiment() -> dict[str, list[Any]]:
+def experiment(n) -> dict[str, list[Any]]:
     res = {
         "exponent": []
         , "split_type": []
@@ -87,7 +87,7 @@ def experiment() -> dict[str, list[Any]]:
         , "depth": []
     }
 
-    for exp in range(1, 7):
+    for exp in range(1, n + 1):
         print(f"Conducting experiment for n={1000 * 2 ** exp} ...")
         tree1, tree2 = generate_rand_trees(exp)
         res["exponent"].extend([exp, exp])
@@ -101,18 +101,18 @@ def experiment() -> dict[str, list[Any]]:
 def parse_results(res: dict) -> pd.DataFrame:
     df = pd.DataFrame(res)
     df["mean_cost_per_join"] = df["total_join_cost"] / df["n_joins"]
-    df.drop(columns=["total_join_cost", "n_joins"], inplace=True)
+    df.drop(columns=["total_join_cost", "n_joins", "split_key", "depth"], inplace=True)
 
     rand = df[df["split_type"] == 'random']
     max_ = df[df["split_type"] == 'max']
 
     df = rand.merge(max_, how='inner', on='exponent', suffixes=('_rand', '_max'))
-    df.drop(columns=['split_type_rand', 'split_type_max', 'split_key_rand', 'split_key_rand'], inplace=True)
+    df.drop(columns=['split_type_rand', 'split_type_max'], inplace=True)
     df = df.round(2)
     return df
 
 
-df = parse_results(experiment())
+df = parse_results(experiment(10))
 df.to_excel('exp_res.xlsx')
 
 pass
